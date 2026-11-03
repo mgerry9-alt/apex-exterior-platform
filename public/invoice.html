@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Digital Invoice & Service Receipt — Gerry's Window Services</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #111827;
+      --border: rgba(255,255,255,0.08);
+      --primary: #3b82f6;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+      padding: 24px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .badge-top {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .inv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+    .inv-num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .inv-date {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .status-pill.unpaid { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-pill.paid { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* Line items */
+    .line-item-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.9rem;
+    }
+    .line-item-desc { color: #cbd5e1; }
+    .line-item-price { font-weight: 700; color: #fff; font-family: monospace; }
+
+    /* Totals */
+    .totals-box {
+      margin-top: 14px;
+      border-top: 2px solid var(--border);
+      padding-top: 12px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .total-row.final {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .total-row.final .val { color: #34d399; }
+
+    /* Tip Section */
+    .tip-box {
+      background: rgba(59, 130, 246, 0.05);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+    .tip-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-bottom: 4px;
+    }
+    .tip-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .tip-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .tip-btn {
+      padding: 10px 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .tip-btn:hover { border-color: var(--primary); }
+    .tip-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .tip-btn small { display: block; font-size: 0.7rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+    .tip-btn.active small { color: #e0f2fe; }
+
+    /* Pay Button */
+    .btn-pay {
+      width: 100%;
+      padding: 18px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-pay:hover { background: #059669; }
+
+    /* Success Paid Screen */
+    .paid-screen {
+      display: none;
+      text-align: center;
+      padding: 24px 16px;
+    }
+    .paid-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div style="display:inline-flex; align-items:center; gap:6px; margin-bottom:8px;">
+      <span class="badge-top" style="margin:0;">Gerry's Window Services</span>
+      <span class="badge-top" style="margin:0; background:rgba(99,102,241,0.15); color:#a5b4fc; border-color:rgba(99,102,241,0.3);">Powered by APEX</span>
+    </div>
+    <h1 style="font-size:1.4rem; font-weight:900; color:#fff;">Digital Invoice & Service Receipt</h1>
+    <p style="font-size:0.82rem; color:var(--muted); margin-top:2px;">(612) 666-7720 • gerryswindows.com</p>
+  </div>
+
+  <div class="container">
+
+    <div class="card" id="invoice-card">
+      <div class="inv-header">
+        <div>
+          <div class="inv-num" id="inv-num">INV-1041</div>
+          <div class="inv-date" id="inv-date">Issued: Today</div>
+        </div>
+        <span class="status-pill unpaid" id="inv-status">Payment Due</span>
+      </div>
+
+      <div style="font-size:0.85rem; margin-bottom:16px;">
+        <strong style="color:#fff;" id="inv-name">Evelyn Stone</strong>
+        <div style="color:var(--muted);" id="inv-addr">3400 Bushaway Rd, Wayzata</div>
+      </div>
+
+      <!-- Line items -->
+      <div class="line-item-row">
+        <span class="line-item-desc">Pure DI Window Detailing (Interior & Exterior, 34 Panes)</span>
+        <span class="line-item-price">$385.00</span>
+      </div>
+      <div class="line-item-row">
+        <span class="line-item-desc">Screen Wash & Frame Detailing</span>
+        <span class="line-item-price">$100.00</span>
+      </div>
+
+      <!-- Totals -->
+      <div class="totals-box">
+        <div class="total-row"><span>Subtotal:</span><span id="inv-subtotal">$485.00</span></div>
+        <div class="total-row"><span>Sales Tax (0% Service):</span><span>$0.00</span></div>
+        <div class="total-row" id="tip-summary-row" style="display:none; color:#38bdf8;">
+          <span>Crew Tip:</span><span id="tip-summary-val">$0.00</span>
+        </div>
+        <div class="total-row final"><span>Total Due:</span><span class="val" id="inv-total">$485.00</span></div>
+      </div>
+    </div>
+
+    <!-- Tipping Section (Flyra & Jobber Revenue Booster) -->
+    <div class="tip-box" id="tip-section">
+      <div class="tip-title">🙌 Tip Your Service Crew (100% goes to Techs)</div>
+      <div class="tip-sub">Mason & Tyler worked hard to make your windows sparkling clean today!</div>
+      <div class="tip-grid">
+        <div class="tip-btn" onclick="setTip(10)">10%<small id="tip-10-lbl">$48</small></div>
+        <div class="tip-btn active" onclick="setTip(15)">15%<small id="tip-15-lbl">$72</small></div>
+        <div class="tip-btn" onclick="setTip(20)">20%<small id="tip-20-lbl">$97</small></div>
+        <div class="tip-btn" onclick="setTip(0)">None<small>$0</small></div>
+      </div>
+    </div>
+
+    <!-- Pay Button -->
+    <div id="pay-controls">
+      <button class="btn-pay" onclick="submitPayment()">
+        <span>🔒 Pay Total: <span id="pay-button-total">$557.00</span></span>
+      </button>
+      <div style="text-align:center; margin-top:10px; font-size:0.75rem; color:var(--muted);">
+        Accepts Apple Pay, Google Pay, Visa, Mastercard, AMEX
+      </div>
+    </div>
+
+    <!-- Success Paid Screen -->
+    <div class="card paid-screen" id="paid-screen">
+      <div class="paid-icon">🎉</div>
+      <h2 style="font-size:1.4rem; font-weight:800; color:#34d399; margin-bottom:8px;">Payment Received!</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:18px;">
+        Thank you for choosing Gerry's Window Services. Your receipt has been emailed to your address.
+      </p>
+
+      <div style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); border-radius:10px; padding:16px;">
+        <strong style="color:#60a5fa; font-size:0.95rem;">⭐ Love your clean windows?</strong>
+        <p style="font-size:0.8rem; color:#cbd5e1; margin-top:6px; margin-bottom:12px;">
+          Leaving a 60-second 5-star Google review helps our local crew tremendously!
+        </p>
+        <a href="https://gerryswindows.com" target="_blank" style="display:inline-block; padding:10px 18px; background:var(--primary); color:#fff; border-radius:8px; font-weight:700; text-decoration:none; font-size:0.85rem;">
+          Leave 5-Star Google Review
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const subtotal = 485.0;
+    let selectedTip = 72.0;
+    const invId = new URLSearchParams(window.location.search).get('id') || 1;
+
+    function setTip(pct) {
+      document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
+      event.target.closest('.tip-btn').classList.add('active');
+      selectedTip = Math.round(subtotal * (pct / 100));
+      updateTotal();
+    }
+
+    function updateTotal() {
+      const finalAmt = subtotal + selectedTip;
+      document.getElementById('inv-total').innerText = '$' + finalAmt.toFixed(2);
+      document.getElementById('pay-button-total').innerText = '$' + finalAmt.toFixed(2);
+      if (selectedTip > 0) {
+        document.getElementById('tip-summary-row').style.display = 'flex';
+        document.getElementById('tip-summary-val').innerText = '$' + selectedTip.toFixed(2);
+      } else {
+        document.getElementById('tip-summary-row').style.display = 'none';
+      }
+    }
+
+    async function submitPayment() {
+      const btn = document.querySelector('.btn-pay');
+      btn.innerText = 'Processing Payment...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/invoices/pay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            invoice_id: invId,
+            tip_amount: selectedTip,
+            payment_method: 'Credit Card (Apple Pay)'
+          })
+        });
+        const result = await res.json();
+        if (result.success) {
+          document.getElementById('tip-section').style.display = 'none';
+          document.getElementById('pay-controls').style.display = 'none';
+          document.getElementById('inv-status').className = 'status-pill paid';
+          document.getElementById('inv-status').innerText = 'PAID IN FULL';
+          document.getElementById('paid-screen').style.display = 'block';
+        }
+      } catch (err) {
+        alert('Payment simulated successfully!');
+      }
+    }
+
+    updateTotal();
+  </script>
+</body>
+</html>

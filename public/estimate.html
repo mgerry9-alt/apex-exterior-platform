@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Your Exterior Cleaning Estimate — Gerry's Window Services</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #111827;
+      --border: rgba(255,255,255,0.08);
+      --primary: #3b82f6;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+      padding: 24px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .badge-top {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+    .client-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .client-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .client-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Tier Grid */
+    .tier-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    @media (min-width: 640px) {
+      .tier-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .tier-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .tier-card:hover {
+      border-color: #38bdf8;
+      transform: translateY(-3px);
+    }
+    .tier-card.selected {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.08);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+    .tier-card.popular {
+      border-color: #3b82f6;
+    }
+    .popular-tag {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #3b82f6;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .tier-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .tier-price {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .tier-price span { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    .tier-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+    .tier-features {
+      list-style: none;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+    .tier-features li {
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tier-features li span { color: #34d399; font-weight: 700; }
+    .tier-btn {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tier-card.selected .tier-btn {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Science & Trust Box */
+    .trust-box {
+      background: rgba(56, 189, 248, 0.06);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 28px;
+      font-size: 0.82rem;
+    }
+    .trust-box h4 {
+      color: #38bdf8;
+      font-size: 0.92rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Schedule & Acceptance */
+    .booking-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 12px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .form-row { display: flex; gap: 10px; }
+    .form-row .form-group { flex: 1; }
+    .btn-accept {
+      width: 100%;
+      padding: 16px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-accept:hover { background: #059669; }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      z-index: 999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div style="display:inline-flex; align-items:center; gap:6px; margin-bottom:8px;">
+      <span class="badge-top" style="margin:0;">Gerry's Window Services</span>
+      <span class="badge-top" style="margin:0; background:rgba(99,102,241,0.15); color:#a5b4fc; border-color:rgba(99,102,241,0.3);">Powered by APEX Field OS</span>
+    </div>
+    <h1 style="font-size:1.45rem; font-weight:900; color:#fff; letter-spacing:-0.02em;">Interactive Exterior Care Proposal</h1>
+    <p style="font-size:0.85rem; color:var(--muted); margin-top:4px;">Transparent Good / Better / Best pricing for your home.</p>
+    <div style="margin-top:10px;">
+      <a href="/subscription-plans.html" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:rgba(90,176,240,0.15); border:1px solid rgba(90,176,240,0.35); color:#7dd3fc; padding:5px 14px; border-radius:999px; text-decoration:none; font-size:0.75rem; font-weight:700;">
+        <span>📅</span> Prefer recurring maintenance? View Subscription Plans (Save up to 38%) ➔
+      </a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Route Density Match Urgency Banner -->
+    <div id="route-density-banner" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(16, 185, 129, 0.15)); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.8rem;">🚛</span>
+        <div>
+          <div style="font-weight: 800; font-size: 0.95rem; color: #38bdf8;" id="density-headline">
+            ⚡ Route Density Match in Wayzata!
+          </div>
+          <div style="font-size: 0.8rem; color: #cbd5e1;" id="density-subtext">
+            Truck 1 (Mason • Pure DI Water Rig) is scheduled on your street this week. Claim your automatic $40 neighborhood route discount!
+          </div>
+        </div>
+      </div>
+      <button id="btn-apply-route-discount" class="badge-top" style="margin: 0; background: #059669; color: #fff; border: none; cursor: pointer; padding: 8px 16px; font-weight:800;" onclick="applyRouteDiscount()">
+        Claim -$40 Discount
+      </button>
+    </div>
+
+    <div class="client-card">
+      <div>
+        <div class="client-title" id="est-customer">Dr. Richard Hall</div>
+        <div class="client-meta" id="est-address">3420 Bushaway Rd, Wayzata • 30 Panes</div>
+      </div>
+      <div style="text-align:right;">
+        <span class="badge-top" style="margin:0; background:rgba(16,185,129,0.15); color:#34d399; border-color:rgba(16,185,129,0.3);">
+          Estimate #EST-2001
+        </span>
+      </div>
+    </div>
+
+    <!-- Satellite Property Footprint & Pane Calibration -->
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">🛰️</span>
+          <strong style="font-size:0.95rem; color:#fff;">Satellite Property Footprint & Pane Calibration</strong>
+        </div>
+        <span class="badge-top" style="margin:0; font-size:0.7rem; background:rgba(56,189,248,0.12); color:#38bdf8;">Verified Aerial Scan</span>
+      </div>
+      
+      <div id="satellite-map-preview" style="height:190px; border-radius:10px; overflow:hidden; position:relative; background:#06090f; border:1px solid rgba(255,255,255,0.08); margin-bottom:12px;">
+        <iframe id="map-iframe" width="100%" height="100%" frameborder="0" style="border:0;" src="https://www.openstreetmap.org/export/embed.html?bbox=-93.5350%2C44.9600%2C-93.4850%2C44.9850&amp;layer=mapnik&amp;marker=44.9725%2C-93.5100"></iframe>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; font-size:0.78rem;">
+        <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+          <span style="color:var(--muted); display:block;">Est. Structure</span>
+          <strong style="color:#fff; font-size:0.9rem;">2-Story Residence</strong>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+          <span style="color:var(--muted); display:block;">Window Panes</span>
+          <strong style="color:#38bdf8; font-size:0.9rem;" id="disp-calibrated-panes">30 Panes</strong>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+          <span style="color:var(--muted); display:block;">Water Requirement</span>
+          <strong style="color:#34d399; font-size:0.9rem;">75 Gal 0 PPM DI</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discovery / Service Scope Alert -->
+    <div style="background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:0.82rem; color:#fef08a;">
+      <strong>⚠️ Homeowner Window Specifications:</strong><br>
+      • Exterior: Pure DI wash priced by volume tier (10 panes $100 • 20 panes $200 • 30 panes $300 • 40 panes $390 • 50 panes $480 • 60 panes $570 • 70 panes $660).<br>
+      • Interior: Full inside detailing is +$10/window flat.<br>
+      • Screens: $5 per screen to carefully remove, wet-scrub, and reinstall.<br>
+      • Hard-to-Reach: High ladder-access or cathedral glass assessed on-site (TBD based on severity).
+    </div>
+
+    <!-- Tiered Options -->
+    <div class="tier-grid">
+      <!-- Bronze -->
+      <div class="tier-card" onclick="selectTier('Bronze', 300.0)" id="tier-card-Bronze">
+        <div class="tier-name">1. Essential Clean (Exterior)</div>
+        <div class="tier-price">$300 <span>flat (30 panes)</span></div>
+        <div class="tier-desc">100% spotless 0 PPM Pure DI water wash for all exterior glass & frames.</div>
+        <ul class="tier-features">
+          <li><span>✓</span> 0 PPM Pure DI Water Wash</li>
+          <li><span>✓</span> All Exterior Glass & Sills</li>
+          <li><span>✓</span> Frame & Ledge Rinse</li>
+          <li><span>✓</span> Spot-Free Rain Warranty</li>
+        </ul>
+        <button class="tier-btn">Select Bronze</button>
+      </div>
+
+      <!-- Silver (Popular) -->
+      <div class="tier-card popular selected" onclick="selectTier('Silver', 600.0)" id="tier-card-Silver">
+        <span class="popular-tag">Most Popular (85% Choose)</span>
+        <div class="tier-name" style="color:#60a5fa;">2. Signature Care (Int + Ext)</div>
+        <div class="tier-price">$600 <span>flat</span></div>
+        <div class="tier-desc">Pure water exterior wash + full interior hand detailing ($10/window flat).</div>
+        <ul class="tier-features">
+          <li><span>✓</span> Everything in Essential Clean</li>
+          <li><span>✓</span> Interior Glass Hand Detailing ($10/win)</li>
+          <li><span>✓</span> Track & Sill Vacuuming</li>
+          <li><span>✓</span> Spider Web Removal</li>
+          <li><span>✓</span> Streak-Free Guarantee</li>
+        </ul>
+        <button class="tier-btn">Selected</button>
+      </div>
+
+      <!-- Gold -->
+      <div class="tier-card" onclick="selectTier('Gold', 675.0)" id="tier-card-Gold">
+        <div class="tier-name" style="color:#34d399;">3. Master Complete (In/Out + Screens)</div>
+        <div class="tier-price">$675 <span>flat</span></div>
+        <div class="tier-desc">Complete inside & out rejuvenation including full screen removal & detailing ($5/screen).</div>
+        <ul class="tier-features">
+          <li><span>✓</span> Everything in Signature Care</li>
+          <li><span>✓</span> Screen Removal, Scrub & Reinstall ($5/screen)</li>
+          <li><span>✓</span> Track Deep Scrub</li>
+          <li><span>✓</span> Patio Slider Priority Detail</li>
+          <li><span>✓</span> 100% Satisfaction Guarantee</li>
+        </ul>
+        <button class="tier-btn">Select Gold</button>
+      </div>
+    </div>
+
+    <!-- Science Box -->
+    <div class="trust-box">
+      <h4>🧪 The Gerry's Window Services 0 PPM Guarantee</h4>
+      <p style="color:#cbd5e1; margin-bottom:8px;">
+        Unlike ordinary cleaners who spray tap water containing 320+ parts per million of limestone and minerals (which causes chalky streaks when it dries), our multi-stage reverse osmosis & deionization rig filters water to <strong>exact 0 PPM</strong>.
+      </p>
+      <p style="color:#94a3b8; font-size:0.75rem;">
+        🛡️ Fully Insured ($2,000,000 General Liability) • Eco-Safe & Pet-Safe • 100% Satisfaction Guaranteed
+      </p>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="booking-box">
+      <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:12px;">Lock In Your Package & Reserve Arrival</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Preferred Date</label>
+          <input type="date" id="book-date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Time Slot</label>
+          <select id="book-time" class="form-select">
+            <option>08:30 AM (Morning)</option>
+            <option selected>11:00 AM (Mid-day)</option>
+            <option>02:00 PM (Afternoon)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Special Access or Pet Instructions</label>
+        <input type="text" id="book-notes" class="form-input" placeholder="e.g. Side gate unlocked, dogs put away">
+      </div>
+
+      <button class="btn-accept" onclick="acceptEstimate()">
+        ✅ Accept <span id="btn-tier-name">Signature Care ($520)</span> & Book Slot
+      </button>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let currentTier = 'Silver';
+    let currentAmount = 600.0;
+    let routeDiscountApplied = false;
+    const estimateId = new URLSearchParams(window.location.search).get('id') || 1;
+
+    // Set tomorrow as default date
+    const tmrw = new Date();
+    tmrw.setDate(tmrw.getDate() + 2);
+    document.getElementById('book-date').value = tmrw.toISOString().split('T')[0];
+
+    const basePrices = {
+      Bronze: 300.0,
+      Silver: 600.0,
+      Gold: 675.0
+    };
+
+    function applyRouteDiscount() {
+      if (routeDiscountApplied) return;
+      routeDiscountApplied = true;
+      const btn = document.getElementById('btn-apply-route-discount');
+      if (btn) {
+        btn.innerText = '✓ -$40 Route Discount Applied';
+        btn.style.background = '#0ea5e9';
+      }
+
+      showToast('🎉 $40 Neighborhood Route Discount applied to all packages!');
+
+      // Update card prices
+      const bCard = document.getElementById('tier-card-Bronze');
+      const sCard = document.getElementById('tier-card-Silver');
+      const gCard = document.getElementById('tier-card-Gold');
+
+      if (bCard) bCard.querySelector('.tier-price').innerHTML = `$260 <span style="text-decoration:line-through;color:#94a3b8;font-size:0.8rem;">$300</span>`;
+      if (sCard) sCard.querySelector('.tier-price').innerHTML = `$560 <span style="text-decoration:line-through;color:#94a3b8;font-size:0.8rem;">$600</span>`;
+      if (gCard) gCard.querySelector('.tier-price').innerHTML = `$635 <span style="text-decoration:line-through;color:#94a3b8;font-size:0.8rem;">$675</span>`;
+
+      selectTier(currentTier, basePrices[currentTier] - 40.0);
+    }
+
+    function selectTier(tier, amount) {
+      currentTier = tier;
+      currentAmount = routeDiscountApplied ? (basePrices[tier] - 40.0) : (amount || basePrices[tier]);
+      document.querySelectorAll('.tier-card').forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('.tier-btn').innerText = 'Select';
+      });
+      const chosen = document.getElementById(`tier-card-${tier}`);
+      if (chosen) {
+        chosen.classList.add('selected');
+        chosen.querySelector('.tier-btn').innerText = 'Selected';
+      }
+      const names = {
+        Bronze: `Essential Clean ($${currentAmount})`,
+        Silver: `Signature Care ($${currentAmount})`,
+        Gold: `Master Complete ($${currentAmount})`
+      };
+      document.getElementById('btn-tier-name').innerText = names[tier] || `${tier} ($${currentAmount})`;
+    }
+
+    async function acceptEstimate() {
+      const date = document.getElementById('book-date').value;
+      const time = document.getElementById('book-time').value;
+      const notes = document.getElementById('book-notes').value;
+
+      try {
+        const res = await fetch('/api/estimates/accept', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            estimate_id: estimateId,
+            selected_tier: currentTier,
+            amount: currentAmount,
+            preferred_date: date,
+            time_slot: time,
+            notes: notes
+          })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast('🎉 Reservation confirmed! Truck scheduled on dispatch board.');
+          setTimeout(() => {
+            alert(`Thank you! Your ${currentTier} package has been scheduled for ${date} at ${time}. Mason and the crew will arrive in Truck 1!`);
+          }, 600);
+        }
+      } catch (err) {
+        showToast('Connection error');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 3500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+# System & Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Environment and sensitive files
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+
+# Logs & temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+tmp/
+temp/
+
+# Antigravity artifacts
+.system_generated/
+scratch/
+
+# Dependencies & Build artifacts
+node_modules/
+dist/
+build/
+coverage/

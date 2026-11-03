@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APEX Field OS | Autonomous Exterior Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Left Navigation Sidebar -->
+    <aside class="app-sidebar" id="appSidebar">
+      <!-- Sidebar Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-badge-row">
+          <div class="brand-avatar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 22 22 22 12 2"></polygon>
+              <path d="M12 7L7 17h10z" fill="rgba(255,255,255,0.25)"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name">
+              APEX <span class="brand-os">OS</span>
+            </div>
+            <div class="brand-sub">Gerry's Window Services</div>
+          </div>
+        </div>
+        <div class="fleet-status-pill" title="IoT telemetry streaming from field trucks">
+          <span class="status-indicator-dot"></span>
+          <span>Fleet Sensors Active &bull; 0.00 PPM</span>
+        </div>
+      </div>
+
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar-nav">
+        <div class="nav-group-label">Operations</div>
+        <button class="nav-item nav-tab active" data-tab="overview" onclick="switchTab('overview')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Overview & Metrics</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="schedule" onclick="switchTab('schedule')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span>Tech Dispatch & IoT</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="inbox" onclick="switchTab('inbox')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Inbox & Phone</span>
+          <span class="badge-count" id="inbox-badge-count">0</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="leads" onclick="switchTab('leads')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>CRM & Properties</span>
+        </button>
+
+        <div class="nav-group-label">Field Sales & Growth</div>
+        <button class="nav-item nav-tab" data-tab="d2d" onclick="switchTab('d2d')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>D2D Canvass Hub</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="invoices" onclick="switchTab('invoices')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          <span>Invoices & Estimates</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="campaigns" onclick="switchTab('campaigns')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+          <span>Campaigns & Drips</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="growth" onclick="switchTab('growth')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <span>Growth Vault</span>
+        </button>
+
+        <div class="nav-group-label">Intelligence & Research</div>
+        <button class="nav-item nav-tab" data-tab="research" onclick="switchTab('research')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <span>AI Intelligence</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="playbook" onclick="switchTab('playbook')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span>Research Playbook</span>
+        </button>
+        <button class="nav-item nav-tab" data-tab="settings" onclick="switchTab('settings')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings & Keys</span>
+        </button>
+
+        <div class="nav-group-label">Venture & Investor Deck</div>
+        <button class="nav-item nav-tab" data-tab="investor" onclick="switchTab('investor')">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          <span>Investor Pitch & Slides</span>
+          <span class="external-tag" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.3);">7-MIN</span>
+        </button>
+
+        <div class="nav-group-label">Live Portals & Previews</div>
+        <a href="/rep.html" target="_blank" class="nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18h.01M8 21h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"></path></svg>
+          <span>Field Rep Portal</span>
+          <span class="external-tag">&#8599;</span>
+        </a>
+        <a href="/estimate.html?id=1" target="_blank" class="nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>Client 3-Tier Quote</span>
+          <span class="external-tag">&#8599;</span>
+        </a>
+        <a href="/certificate.html?cert=CERT-2610-8842" target="_blank" class="nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15l-2 5l9-9l-9-9l2 5l-8 4z"></path></svg>
+          <span>Clarity Certificate</span>
+          <span class="external-tag">&#8599;</span>
+        </a>
+        <a href="/subscription-plans.html" target="_blank" class="nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Subscription Plans</span>
+          <span class="external-tag">&#8599;</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar User Footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user-pill">
+          <div class="user-avatar">MG</div>
+          <div class="user-info">
+            <div class="user-name">Mason Gerry</div>
+            <div class="user-role">Founder / Lead Tech</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Application Wrapper -->
+    <div class="app-main-wrapper">
+      <!-- Topbar Header -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div>
+            <h1 class="topbar-page-title" id="topbarPageTitle">Operations Overview & Metrics</h1>
+            <div class="topbar-subtitle" id="topbarPageSubtitle">Real-time telemetry, lead pipeline, and dispatch health for Gerry's Window Services</div>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Zoho ZeptoMail Token Monitor Pill -->
+          <div class="zeptomail-pill" id="header-zeptomail-pill" onclick="switchTab('settings')" title="Click to view Zoho ZeptoMail Settings">
+            <span class="pill-dot"></span>
+            <span id="zeptomail-pill-text">⚡ ZeptoMail: 10,000 Credits ($2.50) &bull; <strong id="header-credits-left">9,905 left</strong></span>
+          </div>
+
+          <div class="compliance-badge" id="quiet-hours-indicator">
+            <span class="status-dot green"></span>
+            <span id="quiet-hours-text">Compliant Window Active (8AM - 8PM)</span>
+          </div>
+
+          <button class="btn btn-secondary" onclick="openCallModal(null, '', '', '')" style="display:inline-flex; align-items:center; gap:6px;">
+            <span>📞</span>
+            <span>Quick Call</span>
+          </button>
+          <button class="btn btn-secondary" onclick="openConnectQuotesModal()" style="display:inline-flex; align-items:center; gap:6px;">
+            <span>🔗</span>
+            <span>Connect Quotes</span>
+          </button>
+          <button class="btn btn-secondary" onclick="openAddLeadModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Lead
+          </button>
+          <button class="btn btn-primary" onclick="triggerDripDispatcher()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Run Drip Dispatcher
+          </button>
+        </div>
+      </header>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+
+      <!-- TAB 1: OVERVIEW -->
+      <section id="tab-overview" class="tab-pane active">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Active Leads</span>
+              <span class="kpi-icon blue">👥</span>
+            </div>
+            <div class="kpi-value" id="kpi-contacts">-</div>
+            <div class="kpi-subtext">Exterior service prospects in pipeline</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Outreach Messages</span>
+              <span class="kpi-icon indigo">📤</span>
+            </div>
+            <div class="kpi-value" id="kpi-sent">-</div>
+            <div class="kpi-subtext">SMS & Email drip touches dispatched</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Response Rate</span>
+              <span class="kpi-icon emerald">💬</span>
+            </div>
+            <div class="kpi-value highlight-green" id="kpi-reply-rate">-%</div>
+            <div class="kpi-subtext">Industry benchmark is ~14.5%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Positive Sentiment</span>
+              <span class="kpi-icon purple">✨</span>
+            </div>
+            <div class="kpi-value" id="kpi-sentiment">-%</div>
+            <div class="kpi-subtext">Homeowners interested or booking</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Jobs Booked</span>
+              <span class="kpi-icon amber">📅</span>
+            </div>
+            <div class="kpi-value" id="kpi-booked">-</div>
+            <div class="kpi-subtext">Confirmed on service calendar</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Pipeline Value</span>
+              <span class="kpi-icon teal">💵</span>
+            </div>
+            <div class="kpi-value highlight-blue" id="kpi-pipeline">$0</div>
+            <div class="kpi-subtext">Active estimate quote revenue</div>
+          </div>
+        </div>
+
+        <!-- APEX Customer Experience Journey Rail -->
+        <div class="card mb-6" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(13, 19, 31, 0.95) 100%); border: 1px solid rgba(14, 165, 233, 0.25);">
+          <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding: 12px 18px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="badge blue">⚡ 4IR WORKFLOW</span>
+              <span style="font-weight:700; font-size:0.85rem; color:#f8fafc;">Autonomous Customer Journey Engine</span>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <a href="/estimate.html?id=1" target="_blank" class="btn btn-xs btn-primary" style="text-decoration:none;">
+                <span>✨</span> Homeowner Proposal
+              </a>
+              <a href="/subscription-plans.html" target="_blank" class="btn btn-xs btn-secondary" style="text-decoration:none; border-color:#5ab0f0; color:#5ab0f0;">
+                <span>📄</span> Subscription Plans
+              </a>
+              <a href="/certificate.html?cert=CERT-2610-8842" target="_blank" class="btn btn-xs btn-secondary" style="text-decoration:none;">
+                <span>🏆</span> Clarity Certificate
+              </a>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 16px 18px;">
+            <div class="apex-cx-container" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div class="cx-step">
+                <span class="cx-dot">1</span>
+                <div class="cx-info">
+                  <strong>Speed-to-Lead</strong>
+                  <span>&lt;90s SMS Response</span>
+                </div>
+              </div>
+              <div class="cx-connector"></div>
+              <div class="cx-step">
+                <span class="cx-dot">2</span>
+                <div class="cx-info">
+                  <strong>Tiered Proposal</strong>
+                  <span>Good / Better / Best</span>
+                </div>
+              </div>
+              <div class="cx-connector"></div>
+              <div class="cx-step">
+                <span class="cx-dot">3</span>
+                <div class="cx-info">
+                  <strong>Self-Booking</strong>
+                  <span>1-Click Arrival Slot</span>
+                </div>
+              </div>
+              <div class="cx-connector"></div>
+              <div class="cx-step">
+                <span class="cx-dot">4</span>
+                <div class="cx-info">
+                  <strong>GPS Dispatch</strong>
+                  <span>Truck 1 (Mason)</span>
+                </div>
+              </div>
+              <div class="cx-connector"></div>
+              <div class="cx-step">
+                <span class="cx-dot">5</span>
+                <div class="cx-info">
+                  <strong>Mobile Invoice</strong>
+                  <span>+15% Crew Tipping</span>
+                </div>
+              </div>
+              <div class="cx-connector"></div>
+              <div class="cx-step">
+                <span class="cx-dot">6</span>
+                <div class="cx-info">
+                  <strong>5-Star Review</strong>
+                  <span>Google Multiplier</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-split">
+          <!-- Channel Performance Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Channel Performance: SMS vs. Email</h3>
+              <span class="badge blue">Live Outreach Stats</span>
+            </div>
+            <div class="card-body">
+              <div class="channel-stats-row">
+                <div class="channel-stat-box">
+                  <div class="channel-stat-header">
+                    <span class="channel-pill sms">SMS Outreach</span>
+                    <span class="stat-badge high" id="sms-reply-rate-badge">-</span>
+                  </div>
+                  <div class="stat-large" id="sms-sent-stat">-</div>
+                  <div class="stat-label">Messages Dispatched</div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar sms" id="sms-bar" style="width: 0%"></div>
+                  </div>
+                  <div class="stat-footer-text" id="sms-received-text">- replies received (Fast reply median: ~9 min)</div>
+                </div>
+
+                <div class="channel-stat-box">
+                  <div class="channel-stat-header">
+                    <span class="channel-pill email">Email Outreach</span>
+                    <span class="stat-badge medium" id="email-reply-rate-badge">-</span>
+                  </div>
+                  <div class="stat-large" id="email-sent-stat">-</div>
+                  <div class="stat-label">Emails Dispatched</div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar email" id="email-bar" style="width: 0%"></div>
+                  </div>
+                  <div class="stat-footer-text" id="email-received-text">- replies received (Best for rich photo quotes)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action / Status Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Outreach System Health & Compliance</h3>
+              <span class="badge green">TCPA Shield Active</span>
+            </div>
+            <div class="card-body">
+              <ul class="checklist">
+                <li>
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>Quiet Hours Protection (8:00 AM – 8:00 PM local)</strong>
+                    <p class="text-muted">Prevents early morning or late night texts to protect brand reputation.</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>Automated STOP & Opt-Out Processing</strong>
+                    <p class="text-muted">Keywords STOP, CANCEL, UNSUBSCRIBE immediately halt sequences.</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>Smart Response Intent Classifier</strong>
+                    <p class="text-muted">Automatically tags price objections, plant safety worries, and ready buyers.</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>One-Click Rebuttal Insertion</strong>
+                    <p class="text-muted">Turns customer hesitations into booked jobs with contractor battlecards.</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4IR Strategic Research & Competitive Moat Hub -->
+        <div class="card mt-6" style="border: 1px solid rgba(56, 189, 248, 0.3); background: linear-gradient(135deg, rgba(14, 165, 233, 0.06) 0%, rgba(99, 102, 241, 0.04) 50%, rgba(13, 19, 31, 0.98) 100%);">
+          <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="badge blue">🔬 4IR DEEP RESEARCH</span>
+                <span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">Twin Cities Market Research & Contractor Economics</span>
+              </div>
+              <h3 class="card-title" style="margin-top:4px; font-size:1.15rem; color:#f8fafc;">
+                Competitive Moat: Traditional CRMs vs. APEX Autonomous OS
+              </h3>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <span class="badge green">Zero Software Tax</span>
+              <button class="btn btn-xs btn-secondary" onclick="switchTab('research')">Open AI Intelligence Tab &rarr;</button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:22%;">Operational Dimension</th>
+                  <th style="width:33%;">Legacy FSM (Jobber / Housecall Pro)</th>
+                  <th style="width:33%;">APEX Autonomous Field OS</th>
+                  <th style="width:12%;">Contractor Edge</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Speed-to-Lead Response</strong></td>
+                  <td style="color:#f87171;">Manual push notification; median 2–6 hour delay until contractor finishes job.</td>
+                  <td style="color:#34d399; font-weight:700;">Grounded AI SMS dispatch (&lt;90 seconds) with automated tiered quote.</td>
+                  <td><span class="badge green">3.9x Win Rate</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Water Purity Verification</strong></td>
+                  <td style="color:#f87171;">Subjective claim; zero sensor logging. High customer dispute & re-clean risk.</td>
+                  <td style="color:#38bdf8; font-weight:700;">Industrial IoT Telemetry streaming 0 PPM TDS process water proof + QR hash.</td>
+                  <td><span class="badge blue">100% Trust Moat</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Proposal Architecture</strong></td>
+                  <td style="color:#f87171;">Static 1-option PDF attachment sent via email. 50%+ open drop-off.</td>
+                  <td style="color:#34d399; font-weight:700;">Mobile 3-Tier Proposal (Bronze / Silver / Gold) with 1-click self-booking.</td>
+                  <td><span class="badge green">+$180 / Ticket</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Merchant Processing Rake</strong></td>
+                  <td style="color:#f87171;">Platform transaction fee (1.0%–1.5% surcharge on top of Stripe interchange).</td>
+                  <td style="color:#38bdf8; font-weight:700;">Direct merchant pass-through; zero platform commission or revenue rake.</td>
+                  <td><span class="badge blue">Save $4.8k/yr</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Objection Handling Copilot</strong></td>
+                  <td style="color:#f87171;">Blank chat box; staff improvisation leads to price discounting.</td>
+                  <td style="color:#34d399; font-weight:700;">Instant AI battlecards for plant safety, rain shields, and route discounts.</td>
+                  <td><span class="badge green">+42% Close</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- APEX Multi-Vertical Enterprise Scaling Engine ($657B TAM) -->
+        <div class="card mt-6" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(14, 165, 233, 0.05) 50%, rgba(13, 19, 31, 0.95) 100%); border: 1px solid rgba(99, 102, 241, 0.35);">
+          <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="badge purple">🚀 B2C TO B2B SCALING ARCHITECTURE</span>
+                <span style="font-size:0.75rem; color:#a5b4fc; font-weight:700;">$657B Total Addressable Market &bull; Universal Home Services OS</span>
+              </div>
+              <h3 class="card-title" style="margin-top:4px; font-size:1.15rem; color:#f8fafc;">
+                From Beachhead Proving Ground (Gerry's Windows) to Venture-Scale SaaS
+              </h3>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <span class="badge blue" style="font-size:0.75rem; padding:4px 10px;">1-Click Vertical Presets</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:0.82rem; color:#cbd5e1; margin-bottom:14px; line-height:1.5;">
+              While <strong>Gerry's Window Services</strong> serves as our live cash-flowing proving ground across Lake Minnetonka and the Twin Cities, APEX Field OS is engineered to eliminate the #1 structural failure point across <em>all</em> blue-collar home services: <strong>the seasonal feast-or-famine cycle</strong>. By automating speed-to-lead and turning one-off cleans into recurring subscription memberships, APEX transforms trade businesses into high-margin enterprise assets.
+            </p>
+
+            <!-- 5 Vertical Cards Grid -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+              <!-- 1. Window Cleaning -->
+              <div style="background:rgba(8,12,21,0.7); border:1.5px solid #0284c7; border-radius:10px; padding:12px; position:relative;">
+                <div style="position:absolute; right:8px; top:8px; font-size:0.65rem; background:rgba(2,132,199,0.25); color:#38bdf8; font-weight:800; padding:2px 6px; border-radius:4px;">LIVE BEACHHEAD</div>
+                <div style="font-size:1.1rem; margin-bottom:4px;">🪟</div>
+                <div style="font-size:0.85rem; font-weight:800; color:#fff;">Window Cleaning</div>
+                <div style="font-size:0.72rem; color:#94a3b8; margin-top:2px;">Gerry's Window Services</div>
+                <div style="margin-top:8px; font-size:0.72rem; color:#cbd5e1; line-height:1.4;">
+                  &bull; <strong>Pricing:</strong> $10/pane (up to 30), $9 after<br>
+                  &bull; <strong>Subscription:</strong> $42 - $65/mo (2-4x/yr)<br>
+                  &bull; <strong>Moat:</strong> 0 PPM DI process water + 48h rain shield
+                </div>
+              </div>
+
+              <!-- 2. Pressure & Soft Washing -->
+              <div style="background:rgba(8,12,21,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px;">
+                <div style="font-size:1.1rem; margin-bottom:4px;">💦</div>
+                <div style="font-size:0.85rem; font-weight:800; color:#fff;">Pressure & Soft Wash</div>
+                <div style="font-size:0.72rem; color:#94a3b8; margin-top:2px;">Driveways, Siding, Roofs</div>
+                <div style="margin-top:8px; font-size:0.72rem; color:#cbd5e1; line-height:1.4;">
+                  &bull; <strong>Pricing:</strong> $0.20 - $0.45 / sq ft<br>
+                  &bull; <strong>Subscription:</strong> Annual Mildew Shield ($39/mo)<br>
+                  &bull; <strong>Moat:</strong> Eco-neutralizer botanical rinse
+                </div>
+              </div>
+
+              <!-- 3. Gutter Defense -->
+              <div style="background:rgba(8,12,21,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px;">
+                <div style="font-size:1.1rem; margin-bottom:4px;">🍂</div>
+                <div style="font-size:0.85rem; font-weight:800; color:#fff;">Gutter & Downspout</div>
+                <div style="font-size:0.72rem; color:#94a3b8; margin-top:2px;">Cleanout & Guard Care</div>
+                <div style="margin-top:8px; font-size:0.72rem; color:#cbd5e1; line-height:1.4;">
+                  &bull; <strong>Pricing:</strong> $1.25 - $2.00 / linear ft<br>
+                  &bull; <strong>Subscription:</strong> Spring & Fall Clean Pass ($29/mo)<br>
+                  &bull; <strong>Moat:</strong> Pole-camera verification before/after
+                </div>
+              </div>
+
+              <!-- 4. Lawn & Grounds -->
+              <div style="background:rgba(8,12,21,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px;">
+                <div style="font-size:1.1rem; margin-bottom:4px;">🌱</div>
+                <div style="font-size:0.85rem; font-weight:800; color:#fff;">Lawn & Landscape</div>
+                <div style="font-size:0.72rem; color:#94a3b8; margin-top:2px;">Turf Mowing & Fertilizer</div>
+                <div style="margin-top:8px; font-size:0.72rem; color:#cbd5e1; line-height:1.4;">
+                  &bull; <strong>Pricing:</strong> $45 - $85 / weekly cut<br>
+                  &bull; <strong>Subscription:</strong> 8-Month Season Pass ($149/mo)<br>
+                  &bull; <strong>Moat:</strong> Strict 500m street-density route lock
+                </div>
+              </div>
+
+              <!-- 5. Holiday Lighting -->
+              <div style="background:rgba(8,12,21,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px;">
+                <div style="font-size:1.1rem; margin-bottom:4px;">❄️</div>
+                <div style="font-size:0.85rem; font-weight:800; color:#fff;">Holiday Lighting</div>
+                <div style="font-size:0.72rem; color:#94a3b8; margin-top:2px;">High-Ticket Winter Revenue</div>
+                <div style="margin-top:8px; font-size:0.72rem; color:#cbd5e1; line-height:1.4;">
+                  &bull; <strong>Pricing:</strong> $1,500 - $4,000 / install<br>
+                  &bull; <strong>Subscription:</strong> 3-Yr Lease & Storage Club<br>
+                  &bull; <strong>Moat:</strong> Off-season climate storage facility
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Segment Intelligence & Economics Showcase -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Target Audience Intelligence & Economics</h3>
+              <p class="text-muted" style="font-size:0.8rem; margin-top:2px;">Data-driven comparison of Twin Cities exterior cleaning customer segments to maximize revenue per outreach hour.</p>
+            </div>
+            <button class="btn btn-xs btn-primary" onclick="switchTab('campaigns')">View Campaigns</button>
+          </div>
+          <div class="card-body">
+            <div class="segment-showcase-grid">
+              <div class="segment-card">
+                <span class="segment-tag hoa">HOA & Property Managers</span>
+                <div class="segment-val">$1,500 – $6,500</div>
+                <div class="segment-sub">Average Contract Value</div>
+                <div style="margin-top:10px; font-size:0.8rem; color:#94a3b8; line-height:1.4;">
+                  • Channel: B2B Cold Email Drip<br>
+                  • Scope: 30-100 unit townhomes, clubhouses, pool decks<br>
+                  • LTV: $8,000+/year recurring agreements
+                </div>
+                <button class="btn btn-xs btn-secondary mt-4" style="width:100%;" onclick="openImportModal()">Import HOA Targets</button>
+              </div>
+
+              <div class="segment-card">
+                <span class="segment-tag storefront">Commercial Storefronts</span>
+                <div class="segment-val">$80 – $350 / clean</div>
+                <div class="segment-sub">Recurring Route Work</div>
+                <div style="margin-top:10px; font-size:0.8rem; color:#94a3b8; line-height:1.4;">
+                  • Channel: 2-Min Phone Call + Email<br>
+                  • Scope: Bi-weekly & monthly route glass<br>
+                  • Advantage: Zero customer re-acquisition cost
+                </div>
+                <button class="btn btn-xs btn-secondary mt-4" style="width:100%;" onclick="switchTab('inbox')">View Phone Script</button>
+              </div>
+
+              <div class="segment-card">
+                <span class="segment-tag residential">High-End Residential</span>
+                <div class="segment-val">$350 – $950</div>
+                <div class="segment-sub">Residential Package Value</div>
+                <div style="margin-top:10px; font-size:0.8rem; color:#94a3b8; line-height:1.4;">
+                  • Channel: Inbound Web Form + Speed-to-Lead<br>
+                  • Scope: 0 PPM Pure DI Water + screen detailing<br>
+                  • Key Factor: Reply within 4 minutes
+                </div>
+                <button class="btn btn-xs btn-secondary mt-4" style="width:100%;" onclick="switchTab('campaigns')">View Instant Drip</button>
+              </div>
+
+              <div class="segment-card">
+                <span class="segment-tag realtor">Luxury Realtors & Stagers</span>
+                <div class="segment-val">$300 – $800</div>
+                <div class="segment-sub">Pre-Listing Urgent Clean</div>
+                <div style="margin-top:10px; font-size:0.8rem; color:#94a3b8; line-height:1.4;">
+                  • Channel: B2B Agent Email Introduction<br>
+                  • Scope: 24-48h rush turnaround before photo shoots<br>
+                  • Advantage: High-volume repeat referrals
+                </div>
+                <button class="btn btn-xs btn-secondary mt-4" style="width:100%;" onclick="switchTab('leads')">View Agent Directory</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: D2D FIELD REPS & CANVASS HUB -->
+      <section id="tab-d2d" class="tab-pane">
+        <div class="section-banner">
+          <div>
+            <h2 class="section-title">🚪 Door-to-Door Field Rep Hub & Canvass Territory</h2>
+            <p class="section-desc">Fast 60-second doorstep lead entry for canvassers knocking Twin Cities neighborhoods. Instantly logs property data, quotes, and schedules technician arrival.</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-secondary" onclick="loadD2DData()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              Refresh D2D Feed
+            </button>
+          </div>
+        </div>
+
+        <!-- D2D Stats Row -->
+        <div class="kpi-grid mb-6">
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">Doors Knocked</span><span class="kpi-icon blue">🚪</span></div>
+            <div class="kpi-value" id="d2d-stat-total">-</div>
+            <div class="kpi-subtext">Total homes approached</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">Booked on Spot</span><span class="kpi-icon green">✅</span></div>
+            <div class="kpi-value" id="d2d-stat-booked">-</div>
+            <div class="kpi-subtext">Jobs scheduled from doors</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">Interested Pipeline</span><span class="kpi-icon indigo">📋</span></div>
+            <div class="kpi-value" id="d2d-stat-interested">-</div>
+            <div class="kpi-subtext">Leads enrolled in drip nurture</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">D2D Booked Revenue</span><span class="kpi-icon green">💵</span></div>
+            <div class="kpi-value highlight-blue" id="d2d-stat-revenue">$0</div>
+            <div class="kpi-subtext">Gross revenue closed at doorsteps</div>
+          </div>
+        </div>
+
+        <!-- D2D Main Grid: Quick Entry Form + Territory Activity Feed -->
+        <div class="d2d-grid">
+          <!-- Left: 60-Second Doorstep Form -->
+          <div class="d2d-quick-form">
+            <h3 style="margin-bottom:12px; font-size:1.05rem; display:flex; align-items:center; justify-content:space-between;">
+              <span>⚡ 60-Second Knock Entry</span>
+              <span class="badge blue">Mobile Ready</span>
+            </h3>
+            <form id="d2d-knock-form" onsubmit="submitD2DKnock(event)">
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Sales Rep</label>
+                  <select id="d2d-rep-name" class="form-select" required>
+                    <option value="Jordan">Jordan (Lead Canvasser)</option>
+                    <option value="Sam">Sam (Canvasser)</option>
+                    <option value="Mason">Mason Gerry</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">City / Territory</label>
+                  <select id="d2d-city" class="form-select" onchange="autoFillNeighborhood()">
+                    <option value="Wayzata">Wayzata (Lake Minnetonka)</option>
+                    <option value="Minnetonka">Minnetonka</option>
+                    <option value="Edina">Edina</option>
+                    <option value="Eden Prairie">Eden Prairie</option>
+                    <option value="Woodbury">Woodbury</option>
+                    <option value="Plymouth">Plymouth</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Street Address</label>
+                <input type="text" id="d2d-address" class="form-input" placeholder="e.g. 3480 Bushaway Rd" required>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Homeowner Name</label>
+                  <input type="text" id="d2d-homeowner" class="form-input" placeholder="e.g. Dave Anderson">
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Phone Number</label>
+                  <input type="text" id="d2d-phone" class="form-input" placeholder="(612) 555-0199">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email (for Instant Quote/Confirmation)</label>
+                <input type="email" id="d2d-email" class="form-input" placeholder="dave@gmail.com">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Door Knock Outcome</label>
+                <select id="d2d-status" class="form-select" onchange="toggleD2DScheduleFields()" required>
+                  <option value="Interested">Interested - Needs Quote (Auto-Drips)</option>
+                  <option value="Booked on Spot">Booked on Spot (Add to Tech Schedule)</option>
+                  <option value="Door Hanger Left">Door Hanger Left (Not Home)</option>
+                  <option value="Not Home">Not Home - Follow Up Later</option>
+                  <option value="Not Interested">Not Interested</option>
+                </select>
+              </div>
+
+              <!-- Conditional Fields if Booked on Spot -->
+              <div id="d2d-booking-fields" class="hidden p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 mb-4">
+                <h4 style="color:#34d399; font-size:0.85rem; margin-bottom:8px;">📅 Schedule Technician Arrival Now</h4>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label class="form-label">Service Date</label>
+                    <input type="date" id="d2d-job-date" class="form-input">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label class="form-label">Time Window</label>
+                    <select id="d2d-time-slot" class="form-select">
+                      <option value="08:30 AM">08:30 AM (Morning Slot 1)</option>
+                      <option value="11:30 AM">11:30 AM (Morning Slot 2)</option>
+                      <option value="02:00 PM">02:00 PM (Afternoon Slot)</option>
+                      <option value="04:30 PM">04:30 PM (Late Afternoon)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Assign Truck</label>
+                  <select id="d2d-tech-id" class="form-select">
+                    <option value="1">Truck 1 - Pure DI Water Rig (Mason)</option>
+                    <option value="2">Truck 2 - SoftWash & Flatwork (Tyler & Alex)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Panes Estimate</label>
+                  <select id="d2d-panes" class="form-select">
+                    <option value="20">~20 Panes (Small)</option>
+                    <option value="35" selected>~35 Panes (Average)</option>
+                    <option value="50">~50+ Panes (Large/Lake)</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Quote Given ($)</label>
+                  <input type="number" id="d2d-quote" class="form-input" placeholder="450" value="450">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Services Interested</label>
+                <input type="text" id="d2d-services" class="form-input" value="0 PPM Pure DI Window Cleaning + Screens">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Doorstep Notes</label>
+                <textarea id="d2d-notes" class="form-textarea" rows="2" placeholder="e.g. Dog locked in garage, prefers morning arrival, asked about driveway wash"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+                💾 Save Knock & Sync to CRM
+              </button>
+            </form>
+          </div>
+
+          <!-- Right: Territory Activity Feed & Leaderboard -->
+          <div>
+            <!-- Interactive D2D Territory & Route Density Map (Flyra's #1 Feature) -->
+            <div class="card mb-6" style="background: #090d16; border: 1px solid rgba(59, 130, 246, 0.3);">
+              <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:1.1rem;">🗺️</span>
+                  <div>
+                    <h3 class="card-title" style="font-size:0.95rem;">Territory Pin Map & Route Density Stacking</h3>
+                    <div class="text-muted" style="font-size:0.75rem;">Visual street clustering inspired by Flyra • Route Efficiency: <strong>94%</strong></div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:6px; font-size:0.7rem; font-weight:700;">
+                  <span style="color:#34d399; background:rgba(16,185,129,0.15); padding:3px 8px; border-radius:999px;">● Booked</span>
+                  <span style="color:#60a5fa; background:rgba(59,130,246,0.15); padding:3px 8px; border-radius:999px;">● Quoted</span>
+                  <span style="color:#fbbf24; background:rgba(245,158,11,0.15); padding:3px 8px; border-radius:999px;">● Hanger</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <!-- Street Density Clusters -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:12px;">
+                  <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <strong style="font-size:0.83rem; color:#fff;">📍 Bushaway Rd (Wayzata)</strong>
+                      <span class="badge green">3 Homes Clustered</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                      #3400 (Booked) • #3420 (Booked) • #3450 (Quoted)<br>
+                      <span style="color:#34d399; font-weight:700;">+$1,655 route density value</span>
+                    </div>
+                  </div>
+
+                  <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <strong style="font-size:0.83rem; color:#fff;">📍 Interlachen Blvd (Edina)</strong>
+                      <span class="badge blue">2 Homes Clustered</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                      #5100 (Booked) • #4910 (Hanger Left)<br>
+                      <span style="color:#38bdf8; font-weight:700;">+$1,130 route density value</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="background:rgba(59,130,246,0.06); border:1px dashed rgba(59,130,246,0.25); border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; font-size:0.78rem;">
+                  <span style="color:#94a3b8;">💡 <strong>Flyra Rule:</strong> Knocks within 500m of an existing booked job close at <strong>3.2x higher rate</strong> because neighbors see your branded truck and pure DI water poles!</span>
+                  <a href="/rep.html" target="_blank" class="btn btn-xs btn-primary" style="text-decoration:none; white-space:nowrap;">Open Rep Map</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Canvasser Leaderboard Card -->
+            <div class="card mb-6">
+              <div class="card-header">
+                <h3 class="card-title">Canvasser Performance Leaderboard</h3>
+                <span class="badge green">Live Rep Stats</span>
+              </div>
+              <div class="card-body p-0">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Rep Name</th>
+                      <th>Knocks</th>
+                      <th>Booked</th>
+                      <th>Close %</th>
+                      <th>Revenue Closed</th>
+                    </tr>
+                  </thead>
+                  <tbody id="d2d-leaderboard-body">
+                    <tr><td colspan="5" class="text-center p-4">Loading rep leaderboard...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Territory Activity Feed -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Territory Feed: Pinned Knocks & Dispositions</h3>
+                <span class="badge blue">Twin Cities Field Activity</span>
+              </div>
+              <div class="card-body" id="d2d-activity-feed" style="max-height:550px; overflow-y:auto;">
+                <p class="text-muted">Loading field activity feed...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: TECHNICIAN DISPATCH & SCHEDULE -->
+      <section id="tab-schedule" class="tab-pane">
+        <div class="section-banner">
+          <div>
+            <h2 class="section-title">📅 Technician Dispatch & Route Schedule</h2>
+            <p class="section-desc">Daily dispatch board for Gerry's Window Services field trucks. Track arrival windows, services, and live job status.</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-secondary" onclick="loadScheduleData()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              Refresh Dispatch Board
+            </button>
+            <button class="btn btn-primary" onclick="openAddJobModal()">
+              + Book New Job
+            </button>
+          </div>
+        </div>
+
+        <!-- IoT Fleet Telemetry & Rig Sensor Console (Industry 4.0 Pillar) -->
+        <div class="card mb-6" style="border: 1px solid rgba(56, 189, 248, 0.4); background: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);">
+          <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <h3 class="card-title" style="color:#38bdf8; display:flex; align-items:center; gap:8px; margin:0;">
+                  <span>📡</span> IoT Fleet Telemetry & Pure Water Telematics
+                </h3>
+                <span class="badge green" style="display:inline-flex; align-items:center; gap:6px;">
+                  <span style="width:6px; height:6px; border-radius:50%; background:#10b981; box-shadow:0 0 6px #10b981;"></span>
+                  Sensors Online &bull; 0.00 PPM Verified
+                </span>
+              </div>
+              <p class="text-muted" style="margin-top:4px; font-size:0.83rem;">
+                Live on-board filtration sensors stream mineral purity, water pressure, and resin life directly from Gerry's field rigs to guarantee 100% streak-free glass.
+              </p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <a href="/certificate.html?cert=CERT-2610-8842" target="_blank" class="btn btn-xs btn-primary" style="background:linear-gradient(135deg, #10b981, #059669); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                <span>🏆</span> Open Customer Clarity Certificate
+              </a>
+              <button class="btn btn-xs btn-secondary" onclick="openCertModal()">
+                <span>⚡</span> Issue Certificate
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;" id="iot-trucks-container">
+              
+              <!-- Truck 1 Card -->
+              <div style="background:rgba(30, 41, 59, 0.6); border:1px solid rgba(56, 189, 248, 0.2); border-radius:12px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <div>
+                    <strong style="color:#ffffff; font-size:0.95rem;">Truck 1 &bull; Pure DI Water Rig</strong>
+                    <div style="font-size:0.75rem; color:#94a3b8;">Driver: Mason Gerry (Lead Tech) &bull; Ford Transit 250</div>
+                  </div>
+                  <span class="badge blue">Purifying Active</span>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                  <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase;">Municipal Tap Inflow</div>
+                    <div style="font-size:1.6rem; font-weight:800; color:#f87171; font-family:monospace;" id="truck1-inflow">284 <span style="font-size:0.8rem; font-weight:400; color:#94a3b8;">PPM</span></div>
+                    <div style="font-size:0.68rem; color:#f87171;">Hard Mineral Baseline</div>
+                  </div>
+                  <div style="background:rgba(16, 185, 129, 0.08); border:1px solid rgba(16, 185, 129, 0.3); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="font-size:0.7rem; color:#34d399; text-transform:uppercase;">Purified Outflow</div>
+                    <div style="font-size:1.6rem; font-weight:800; color:#10b981; font-family:monospace;" id="truck1-outflow">000 <span style="font-size:0.8rem; font-weight:400; color:#34d399;">PPM</span></div>
+                    <div style="font-size:0.68rem; color:#34d399;">100% Laboratory Pure</div>
+                  </div>
+                </div>
+
+                <div style="font-size:0.78rem; color:#cbd5e1; display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span>Flow Rate: <strong style="color:#ffffff;" id="truck1-flow">1.8 GPM</strong> (65 PSI)</span>
+                  <span>Filtered Today: <strong style="color:#38bdf8;" id="truck1-gals">112.5 Gal</strong></span>
+                </div>
+
+                <div style="margin-top:8px;">
+                  <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#94a3b8; margin-bottom:4px;">
+                    <span>Deionization Mixed-Bed Resin Life</span>
+                    <strong style="color:#34d399;" id="truck1-resin">94% Capacity</strong>
+                  </div>
+                  <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:9999px; overflow:hidden;">
+                    <div style="width:94%; height:100%; background:linear-gradient(90deg, #10b981, #34d399);" id="truck1-resin-bar"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Truck 2 Card -->
+              <div style="background:rgba(30, 41, 59, 0.6); border:1px solid rgba(16, 185, 129, 0.2); border-radius:12px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <div>
+                    <strong style="color:#ffffff; font-size:0.95rem;">Truck 2 &bull; SoftWash & Flatwork Rig</strong>
+                    <div style="font-size:0.75rem; color:#94a3b8;">Driver: Tyler & Alex (Crew) &bull; RAM ProMaster 3500</div>
+                  </div>
+                  <span class="badge green">Purifying Active</span>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                  <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase;">Municipal Tap Inflow</div>
+                    <div style="font-size:1.6rem; font-weight:800; color:#f87171; font-family:monospace;" id="truck2-inflow">284 <span style="font-size:0.8rem; font-weight:400; color:#94a3b8;">PPM</span></div>
+                    <div style="font-size:0.68rem; color:#f87171;">Hard Mineral Baseline</div>
+                  </div>
+                  <div style="background:rgba(16, 185, 129, 0.08); border:1px solid rgba(16, 185, 129, 0.3); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="font-size:0.7rem; color:#34d399; text-transform:uppercase;">Purified Outflow</div>
+                    <div style="font-size:1.6rem; font-weight:800; color:#10b981; font-family:monospace;" id="truck2-outflow">000 <span style="font-size:0.8rem; font-weight:400; color:#34d399;">PPM</span></div>
+                    <div style="font-size:0.68rem; color:#34d399;">100% Laboratory Pure</div>
+                  </div>
+                </div>
+
+                <div style="font-size:0.78rem; color:#cbd5e1; display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span>Flow Rate: <strong style="color:#ffffff;" id="truck2-flow">2.4 GPM</strong> (70 PSI)</span>
+                  <span>Filtered Today: <strong style="color:#38bdf8;" id="truck2-gals">165.0 Gal</strong></span>
+                </div>
+
+                <div style="margin-top:8px;">
+                  <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:#94a3b8; margin-bottom:4px;">
+                    <span>Deionization Mixed-Bed Resin Life</span>
+                    <strong style="color:#34d399;" id="truck2-resin">88% Capacity</strong>
+                  </div>
+                  <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:9999px; overflow:hidden;">
+                    <div style="width:88%; height:100%; background:linear-gradient(90deg, #10b981, #34d399);" id="truck2-resin-bar"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Truck Filters -->
+        <div class="tech-pill-filter" id="tech-filter-pills">
+          <button class="tech-pill-btn active" onclick="filterTechSchedule('all')">
+            <span>🚛 All Trucks</span>
+          </button>
+          <button class="tech-pill-btn" onclick="filterTechSchedule(1)">
+            <span style="color:#38bdf8;">●</span> Truck 1: Pure DI Water Rig (Mason)
+          </button>
+          <button class="tech-pill-btn" onclick="filterTechSchedule(2)">
+            <span style="color:#34d399;">●</span> Truck 2: SoftWash & Flatwork (Tyler & Alex)
+          </button>
+        </div>
+
+        <!-- Schedule Board (Day Columns) -->
+        <div class="schedule-board" id="schedule-board-container">
+          <p class="text-muted">Loading dispatch schedule...</p>
+        </div>
+      </section>
+
+      <!-- TAB: GROWTH VAULT & ORIGINAL MARKETING PLAYBOOKS -->
+      <section id="tab-growth" class="tab-pane">
+        <div class="section-banner">
+          <div>
+            <h2 class="section-title">💡 Growth Vault & Top Franchise Outreach Engine</h2>
+            <p class="section-desc">Autonomous exterior cleaning playbooks reverse-engineered from industry leaders (Shack Shine, Window Genie, Fish Window Cleaning) + 8 proprietary, high-converting growth playbooks for Gerry's Window Services.</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-secondary" onclick="loadGrowthIdeas()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              Refresh Ideas
+            </button>
+            <button class="btn btn-primary" onclick="triggerDripDispatcher()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Dispatch Active Drips
+            </button>
+          </div>
+        </div>
+
+        <!-- Top Franchise Automation Engine Blueprint Breakdown -->
+        <div class="card mb-6" style="border: 1px solid #3b82f6; background: linear-gradient(145deg, #1e293b, #0f172a);">
+          <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div>
+              <h3 class="card-title" style="color: #60a5fa; display:flex; align-items:center; gap:8px;">
+                <span>🏆</span> Reverse-Engineered Autonomous Engines of Top Exterior Franchises
+              </h3>
+              <p class="text-muted" style="margin-top:4px; font-size:0.85rem;">How industry titans scale to $10M+ using automated triggers, customer retention loops, and route density stacking.</p>
+            </div>
+            <span class="badge blue">Production Blueprint</span>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+              <!-- Shack Shine -->
+              <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <strong style="color: #38bdf8; font-size: 1rem;">Shack Shine Model</strong>
+                  <span class="badge blue">Speed & Reviews</span>
+                </div>
+                <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.5;">
+                  <div style="margin-bottom:6px;"><strong style="color:#94a3b8;">Core Mechanism:</strong> "One-Day Exterior Detailing" bundling window washing, gutter detailing & house softwash in one visit.</div>
+                  <div style="margin-bottom:6px;"><strong style="color:#94a3b8;">Autonomous Loop:</strong> Lead ingestion &rarr; sub-90s SMS speed-to-lead &rarr; job completed &rarr; <strong>2-hour post-service Google Review SMS</strong> with direct 5-star review link.</div>
+                  <div style="color: #34d399; font-weight:600; font-size:0.8rem; margin-top:8px;">✓ Implemented in Gerry's CRM: Campaign 5 Auto-Trigger</div>
+                </div>
+              </div>
+
+              <!-- Window Genie -->
+              <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <strong style="color: #a78bfa; font-size: 1rem;">Window Genie Model</strong>
+                  <span class="badge purple">Recurring Care</span>
+                </div>
+                <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.5;">
+                  <div style="margin-bottom:6px;"><strong style="color:#94a3b8;">Core Mechanism:</strong> "Window Care Program" subscription turning one-time washes into lifetime recurring contracts.</div>
+                  <div style="margin-bottom:6px;"><strong style="color:#94a3b8;">Autonomous Loop:</strong> System puts clients on an automated 180-day calendar hold. At 6 months, sends personalized SMS reserving truck slots with locked-in VIP grandfathered rates.</div>
+                  <div style="color: #34d399; font-weight:600; font-size:0.8rem; margin-top:8px;">✓ Implemented in Gerry's CRM: Campaign 6 (6-Mo Care Reactivation)</div>
+                </div>
+              </div>
+
+              <!-- Fish Window Cleaning -->
+              <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <strong style="color: #fbbf24; font-size: 1rem;">Fish Window Cleaning Model</strong>
+                  <span class="badge yellow">Commercial Density</span>
+                </div>
+                <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.5;">
+                  <div style="margin-bottom:6px;"><strong style="color:#94a3b8;">Core Mechanism:</strong> Block-by-block commercial storefront route density stacking with early morning 5:00 AM silent detailing.</div>
+                  <div style="margin-bottom:6px;"><strong style="color:#94a3b8;">Autonomous Loop:</strong> Drip campaign targeting retail property managers with zero-disruption guarantees, instant timestamped photo proof of service, and autopay billing.</div>
+                  <div style="color: #34d399; font-weight:600; font-size:0.8rem; margin-top:8px;">✓ Implemented in Gerry's CRM: Playbook #4 (Clean-While-You-Sleep)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="tech-pill-filter mb-6" id="growth-category-pills">
+          <button class="tech-pill-btn active" onclick="filterGrowthCategory('All')">All 8 Playbooks</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Luxury Lakeside Niche')">🌊 Luxury Lakeside</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Route Density Hack')">📍 Route Density</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Realtor Referral Engine')">🏡 Realtor Referrals</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Commercial Retainer')">🏬 Commercial 5 AM</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Canvass Psychology')">🧪 TDS Demo Science</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Customer Retention')">🌧️ Post-Rain Warranty</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Eco Add-On Service')">☀️ Solar Output</button>
+          <button class="tech-pill-btn" onclick="filterGrowthCategory('Commercial B2B Growth')">🏢 HOA Board Audit</button>
+        </div>
+
+        <!-- Growth Playbooks Grid -->
+        <div class="growth-cards-grid" id="growth-playbooks-container">
+          <!-- Populated dynamically via loadGrowthIdeas() -->
+          <div style="padding:20px; text-align:center; color:#94a3b8;">Loading Growth Vault playbooks...</div>
+        </div>
+      </section>
+
+      <!-- TAB: INVOICING & TIERED ESTIMATES (FLYRA / JOBBER REVERSE-ENGINEERED) -->
+      <section id="tab-invoices" class="tab-pane">
+        <div class="section-banner">
+          <div>
+            <h2 class="section-title">💳 Instant Invoicing & Tiered Estimate Generator</h2>
+            <p class="section-desc">Taking the best of Flyra & Jobber: 3-tier Good/Better/Best estimates (+38% ticket size), 1-click mobile customer invoices, and direct technician tipping ($0/mo software fee).</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-secondary" onclick="loadInvoicesData()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              Refresh Invoices
+            </button>
+            <a href="/estimate.html" target="_blank" class="btn btn-primary" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+              <span>⚡</span> View Live Tiered Estimate Page
+            </a>
+          </div>
+        </div>
+
+        <!-- Flyra / Jobber Comparison Banner -->
+        <div class="card mb-6" style="border: 1px solid #10b981; background: linear-gradient(145deg, #064e3b 0%, #0f172a 100%);">
+          <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div>
+              <h3 class="card-title" style="color: #34d399; display:flex; align-items:center; gap:8px;">
+                <span>🚀</span> Why This Beats Subscription CRMs (Flyra, Jobber, Housecall Pro)
+              </h3>
+              <p class="text-muted" style="margin-top:4px; font-size:0.83rem;">We analyzed negative reviews on Capterra, Reddit, and G2 to eliminate the #1 complaints of field service software.</p>
+            </div>
+            <span class="badge green">Zero Monthly Fee</span>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; font-size: 0.82rem; color: #cbd5e1;">
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <strong style="color:#ef4444;">❌ Jobber & Flyra Bad Reviews:</strong>
+                <p style="margin-top:4px; color:#94a3b8;">Users complain about paying <strong>$150 – $359/month</strong> plus extra $30/rep per-seat penalties, sudden price hikes, and paying 2.9% + 30¢ with held payout funds.</p>
+                <div style="color:#34d399; font-weight:700; margin-top:6px;">✓ Gerry's CRM: $0/mo forever. Unlimited reps & techs.</div>
+              </div>
+
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <strong style="color:#ef4444;">❌ Housecall Pro App Complaints:</strong>
+                <p style="margin-top:4px; color:#94a3b8;">Field technicians frequently report app lag, crashes during job check-in, and losing offline data in poor cell signal areas.</p>
+                <div style="color:#34d399; font-weight:700; margin-top:6px;">✓ Gerry's CRM: Instant PWA with localStorage offline sync.</div>
+              </div>
+
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <strong style="color:#ef4444;">❌ Gated Automations & Rigid Templates:</strong>
+                <p style="margin-top:4px; color:#94a3b8;">Essential automations (two-way SMS, automated review requests, tipping) are locked behind enterprise top-tier plans.</p>
+                <div style="color:#34d399; font-weight:700; margin-top:6px;">✓ Gerry's CRM: 100% Unlocked. 2-hr review loop & tip prompt built-in.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial KPI Stats -->
+        <div class="kpi-grid mb-6">
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">Paid Revenue (Invoiced)</span><span class="kpi-icon green">💵</span></div>
+            <div class="kpi-value highlight-green" id="inv-kpi-paid">$485.00</div>
+            <div class="kpi-subtext">Collected via instant mobile payments</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">Pending Invoices</span><span class="kpi-icon amber">⏳</span></div>
+            <div class="kpi-value" id="inv-kpi-pending">$750.00</div>
+            <div class="kpi-subtext">Awaiting customer payment</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">Crew Tips Collected</span><span class="kpi-icon blue">🙌</span></div>
+            <div class="kpi-value highlight-blue" id="inv-kpi-tips">$50.00</div>
+            <div class="kpi-subtext">100% credited to Mason, Tyler & Alex</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span class="kpi-title">Tiered Close Rate</span><span class="kpi-icon purple">📈</span></div>
+            <div class="kpi-value highlight-purple">54.2%</div>
+            <div class="kpi-subtext">+22% over single-price quotes</div>
+          </div>
+        </div>
+
+        <!-- 2 Column Layout: Interactive Tiered Estimator + Live Invoices -->
+        <div class="grid-2-col">
+          <!-- Left: Instant Tiered Estimator (Flyra feature) -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">⚡ Instant Tiered Estimate Calculator</h3>
+              <span class="badge blue">Good / Better / Best</span>
+            </div>
+            <div class="card-body">
+              <p class="text-muted mb-3" style="font-size:0.82rem;">Official Gerry's Window Services Pricing: 10 panes $100 • 20 panes $200 • 30 panes $300 • 40 panes $390 • 50 panes $480 • 60 panes $570 • 70 panes $660. Interior: +$10/window flat. Screens: $5/screen.</p>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Window Panes Count</label>
+                  <input type="number" id="calc-panes" class="form-input" value="30" min="10" max="150" step="1" oninput="runEstimatorCalculation()">
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Screens to Remove & Clean ($5/ea)</label>
+                  <input type="number" id="calc-screens" class="form-input" value="15" min="0" max="100" step="1" oninput="runEstimatorCalculation()">
+                </div>
+              </div>
+
+              <!-- Mandatory Discovery Callout -->
+              <div style="background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:0.78rem; color:#fef08a;">
+                <strong>⚠️ Discovery Rule:</strong> Always ask if there are screens ($5/screen to remove & clean) and hard-to-reach or high ladder-access windows (extra charge TBD on-site depending on severity).
+              </div>
+
+              <!-- Calculated Tiers Preview -->
+              <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+                <div style="background:var(--bg-inner); border:1px solid var(--border-color); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <strong style="color:#cbd5e1; font-size:0.88rem;">🥉 Tier 1: Essential Pure DI Exterior</strong>
+                    <div style="color:var(--text-muted); font-size:0.75rem;" id="calc-sub-ext">Exterior Only (100% spotless 0 PPM deionized water wash)</div>
+                  </div>
+                  <span style="font-size:1.15rem; font-weight:800; color:#fff;" id="calc-tier-bronze">$300</span>
+                </div>
+
+                <div style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <strong style="color:#60a5fa; font-size:0.88rem;">🥈 Tier 2: Signature Int & Ext Glass (Most Popular)</strong>
+                    <div style="color:var(--text-muted); font-size:0.75rem;" id="calc-sub-int">Exterior pure water wash + interior hand detailing ($10/window flat)</div>
+                  </div>
+                  <span style="font-size:1.15rem; font-weight:800; color:#38bdf8;" id="calc-tier-silver">$600</span>
+                </div>
+
+                <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <strong style="color:#34d399; font-size:0.88rem;">🥇 Tier 3: Master Complete Care (In/Out + Screens)</strong>
+                    <div style="color:var(--text-muted); font-size:0.75rem;" id="calc-sub-scr">Full inside/out glass detailing + screens removed & cleaned ($5/screen)</div>
+                  </div>
+                  <span style="font-size:1.15rem; font-weight:800; color:#6ee7b7;" id="calc-tier-gold">$675</span>
+                </div>
+              </div>
+
+              <div class="mt-4" style="display:flex; gap:10px;">
+                <a href="/estimate.html?id=1" target="_blank" class="btn btn-primary flex-1" style="text-decoration:none; justify-content:center;">
+                  🔗 Open Customer Proposal Link
+                </a>
+                <button class="btn btn-secondary" onclick="copyShareUrlText('http://localhost:3000/estimate.html?id=1')">
+                  Copy Link
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Live Digital Invoices List -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Digital Invoices & Mobile Receipts</h3>
+              <span class="badge green">Live Sync</span>
+            </div>
+            <div class="card-body p-0">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Tip</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="invoices-table-body">
+                  <tr><td colspan="6" class="text-center p-4">Loading invoices...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-research" class="tab-pane">
+        <div class="section-banner">
+          <div>
+            <h2 class="section-title">Homeowner Response Research & Behavioral Intelligence</h2>
+            <p class="section-desc">In-depth categorization of customer feedback, objection trends, and marketing optimization recommendations.</p>
+          </div>
+          <button class="btn btn-secondary" onclick="loadResearchData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            Refresh Research Data
+          </button>
+        </div>
+
+        <!-- Research Top Row: Breakdown & Top Objections -->
+        <div class="grid-2-col">
+          <!-- Intent Breakdown Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Customer Response Intent Distribution</h3>
+              <span class="badge purple">NLP Categorization</span>
+            </div>
+            <div class="card-body">
+              <p class="text-muted mb-4">Every inbound text and email is analyzed for homeowner purchase intent.</p>
+              <div id="intent-breakdown-list" class="intent-list">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Objections Matrix -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Top Friction Points & Hesitations</h3>
+              <span class="badge amber">Objection Mining</span>
+            </div>
+            <div class="card-body">
+              <p class="text-muted mb-4">The exact hesitations preventing quotes from turning into signed jobs.</p>
+              <div id="top-objections-list" class="objection-list">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategic Marketing Recommendations (The Core Insight Engine) -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Actionable Marketing Strategy Recommendations</h3>
+              <p class="text-muted">Data-driven copy, packaging, and cadence changes generated from response trends.</p>
+            </div>
+            <span class="badge emerald">AI Strategy Engine</span>
+          </div>
+          <div class="card-body">
+            <div id="recommendations-container" class="recs-grid">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Response Testing Sandbox -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Interactive Response Analyzer & Rebuttal Sandbox</h3>
+              <p class="text-muted">Test any customer message to watch real-time intent extraction, sentiment scoring, and counter-script generation.</p>
+            </div>
+            <span class="badge blue">Live Analyzer</span>
+          </div>
+          <div class="card-body">
+            <div class="sandbox-presets mb-4">
+              <span class="preset-label">Test Real Scenarios:</span>
+              <button class="preset-pill" onclick="testPreset('Will your bleach kill my hydrangeas and ruin my flower beds?')">🌺 Plant Safety Concern</button>
+              <button class="preset-pill" onclick="testPreset('$450 seems really expensive. A guy on Facebook quoted me $250.')">💰 Price Resistance</button>
+              <button class="preset-pill" onclick="testPreset('Can you guys come out this Saturday morning to wash the house?')">📅 Ready to Book</button>
+              <button class="preset-pill" onclick="testPreset('We are having construction done, can you check back in March?')">🌸 Spring Deferral</button>
+              <button class="preset-pill" onclick="testPreset('I need to talk to my husband first before making a decision.')">👫 Spousal Consultation</button>
+              <button class="preset-pill" onclick="testPreset('STOP')">🚫 Opt Out</button>
+            </div>
+
+            <div class="sandbox-input-row">
+              <textarea id="sandbox-input" class="form-textarea" rows="3" placeholder="Type or paste any customer SMS or email response here..."></textarea>
+              <button class="btn btn-primary" onclick="runSandboxAnalysis()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                Analyze Response
+              </button>
+            </div>
+
+            <!-- Sandbox Results Display -->
+            <div id="sandbox-results" class="sandbox-results hidden">
+              <div class="analysis-header-cards">
+                <div class="mini-res-card">
+                  <span class="res-label">Detected Intent</span>
+                  <span class="res-val" id="res-intent">-</span>
+                </div>
+                <div class="mini-res-card">
+                  <span class="res-label">Sentiment</span>
+                  <span class="res-val" id="res-sentiment">-</span>
+                </div>
+                <div class="mini-res-card">
+                  <span class="res-label">Core Objection</span>
+                  <span class="res-val" id="res-objection">-</span>
+                </div>
+                <div class="mini-res-card">
+                  <span class="res-label">Conversion Status</span>
+                  <span class="res-val" id="res-outcome">-</span>
+                </div>
+              </div>
+
+              <div class="rebuttal-box mt-4">
+                <div class="rebuttal-header">
+                  <strong>Recommended High-Converting Counter-Script:</strong>
+                  <button class="btn btn-sm btn-secondary" onclick="copyRebuttal()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy Script
+                  </button>
+                </div>
+                <div class="rebuttal-body" id="res-rebuttal">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Objection Battlecards Vault -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Exterior Contractor Objection Battlecards</h3>
+              <p class="text-muted">Proven tactical scripts to overcome the top 4 homeowner objections in exterior cleaning.</p>
+            </div>
+            <span class="badge teal">Field Battlecards</span>
+          </div>
+          <div class="card-body">
+            <div id="battlecards-container" class="battlecards-grid">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: CAMPAIGNS & DRIP SEQUENCES -->
+      <section id="tab-campaigns" class="tab-pane">
+        <div class="section-banner">
+          <div>
+            <h2 class="section-title">Automated Outreach Campaigns & Drip Sequences</h2>
+            <p class="section-desc">Multi-channel SMS and Email sequences engineered for high reply rates and compliance.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateCampaignModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Create New Campaign
+          </button>
+        </div>
+
+        <div id="campaigns-list-container" class="campaigns-grid">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 4: TWO-WAY INBOX & REBUTTALS -->
+      <section id="tab-inbox" class="tab-pane">
+        <div class="inbox-wrapper">
+          <!-- Contacts Sidebar -->
+          <div class="inbox-sidebar">
+            <div class="inbox-sidebar-header">
+              <input type="text" id="inbox-search" class="form-input" placeholder="Search conversations..." oninput="filterInboxThreads(this.value)">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding:6px 10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
+                <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem;">
+                  <span id="autopilot-status-dot" style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 8px rgba(16,185,129,0.6);"></span>
+                  <span id="autopilot-status-text" style="font-weight:700; color:#e2e8f0;">AI Auto-Pilot: ON</span>
+                </div>
+                <button type="button" class="btn btn-xs btn-secondary" onclick="toggleAutoPilot()" id="autopilot-toggle-btn" style="font-size:0.7rem; padding:2px 8px;">
+                  Switch Mode
+                </button>
+              </div>
+            </div>
+            <div id="inbox-threads-list" class="inbox-threads-list">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Active Conversation Thread -->
+          <div class="inbox-main" id="inbox-main-pane">
+            <div class="inbox-empty-state" id="inbox-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <h3>Select a Conversation</h3>
+              <p class="text-muted">Select a lead from the list to view the full outreach history, research analysis, and reply tools.</p>
+            </div>
+
+            <!-- Active Thread Detail -->
+            <div class="inbox-thread-view hidden" id="inbox-thread-content">
+              <div class="thread-header">
+                <div>
+                  <h3 class="thread-contact-name" id="thread-contact-name">-</h3>
+                  <div class="thread-contact-meta" id="thread-contact-meta">-</div>
+                </div>
+                <div class="thread-header-actions">
+                  <button class="btn btn-sm btn-secondary" onclick="openSimulateReplyModal()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    Simulate Inbound Reply
+                  </button>
+                </div>
+              </div>
+
+              <!-- Message History Bubble Container -->
+              <div class="thread-bubbles" id="thread-bubbles-container">
+                <!-- Populated via JS -->
+              </div>
+
+              <!-- AI Assistant Rebuttal Box -->
+              <div class="thread-ai-assist" id="thread-ai-assist-box">
+                <div class="ai-assist-header">
+                  <span>💡 <strong>AI Rebuttal Suggestion</strong> (<span id="assist-intent-label">Analysis</span>)</span>
+                  <button class="btn btn-xs btn-primary" onclick="useSuggestedRebuttal()">Insert into Reply</button>
+                </div>
+                <div class="ai-assist-text" id="assist-rebuttal-text">-</div>
+              </div>
+
+              <!-- Reply Box Form -->
+              <div class="thread-reply-box">
+                <div class="reply-controls">
+                  <div class="channel-toggle">
+                    <label class="radio-label">
+                      <input type="radio" name="reply-channel" value="SMS" checked> SMS Text
+                    </label>
+                    <label class="radio-label">
+                      <input type="radio" name="reply-channel" value="Email"> Email
+                    </label>
+                  </div>
+                  <span class="compliance-note">TCPA & CAN-SPAM safe</span>
+                </div>
+                <div class="reply-input-row">
+                  <textarea id="reply-input" class="form-textarea" rows="2" placeholder="Type a response to this homeowner..."></textarea>
+                  <button class="btn btn-primary" onclick="sendInboxReply()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: LEADS & PROPERTIES -->
+      <section id="tab-leads" class="tab-pane">
+        <div class="section-banner">
+          <div>
+            <h2 class="section-title">Leads & Property Directory</h2>
+            <p class="section-desc">Manage prospective exterior cleaning clients, quote amounts, and campaign enrollments.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" onclick="openImportModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              Bulk Import (CSV / HOAs)
+            </button>
+            <button class="btn btn-primary" onclick="openAddLeadModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Add New Lead
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header filters-row">
+            <div class="search-input-wrap">
+              <input type="text" id="lead-search" class="form-input" placeholder="Search by name, address, or phone..." oninput="debounceLeadSearch()">
+            </div>
+            <div class="filter-select-wrap">
+              <select id="lead-status-filter" class="form-select" onchange="loadLeads()">
+                <option value="All">All Lead Statuses</option>
+                <option value="New Lead">New Lead</option>
+                <option value="Quoted">Quoted</option>
+                <option value="Nurturing">Nurturing</option>
+                <option value="Booked">Booked</option>
+                <option value="Lost">Lost</option>
+                <option value="Unsubscribed">Unsubscribed</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-container">
+              <table class="leads-table">
+                <thead>
+                  <tr>
+                    <th>Lead Name</th>
+                    <th>Property Address</th>
+                    <th>Service & Size</th>
+                    <th>Quote Value</th>
+                    <th>Status</th>
+                    <th>Compliance</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-table-body">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: RESEARCH PLAYBOOK & BENCHMARKS -->
+      <section id="tab-playbook" class="tab-pane">
+        <div class="playbook-container">
+          <div class="playbook-header">
+            <h2>The Exterior Services Outreach & Response Research Playbook</h2>
+            <p>Industry benchmarks, psychological triggers, and conversion optimization strategies for pressure washing and soft washing contractors.</p>
+          </div>
+
+          <div class="playbook-card">
+            <h3>1. Industry Performance Benchmarks</h3>
+            <div class="benchmark-grid">
+              <div class="bench-box">
+                <span class="bench-metric">SMS Open Rate</span>
+                <span class="bench-val">97.8%</span>
+                <span class="bench-desc">Read within 4 minutes on mobile</span>
+              </div>
+              <div class="bench-box">
+                <span class="bench-metric">SMS Reply Rate</span>
+                <span class="bench-val">28.4%</span>
+                <span class="bench-desc">Exterior service average (Apex achieves 35%+)</span>
+              </div>
+              <div class="bench-box">
+                <span class="bench-metric">Email Open Rate</span>
+                <span class="bench-val">34.2%</span>
+                <span class="bench-desc">With personalized subject lines</span>
+              </div>
+              <div class="bench-box">
+                <span class="bench-metric">Quote-to-Close Rate</span>
+                <span class="bench-val">41.6%</span>
+                <span class="bench-desc">With automated 4-step omnichannel drip</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="playbook-card">
+            <h3>2. The Exterior Buyer Psychology & Why Homeowners Hesitate</h3>
+            <p>Homeowners seeking exterior cleaning are driven by three distinct psychological motives:</p>
+            <ul class="playbook-list">
+              <li><strong>Pride of Homeownership / HOA Compliance:</strong> Homeowners facing HOA violation letters or having guests over for weekends have urgent intent. Highlighting "Fast 48-Hour Turnaround" and "HOA Compliance Certificate" converts 60% faster.</li>
+              <li><strong>Fear of Property Damage:</strong> The #1 fear in soft washing is plant death and bleached siding. When contractors don't address this upfront, homeowners delay or ghost quotes. Promising plant pre-soaking and botanical surfactant rinses neutralizes this barrier.</li>
+              <li><strong>Price Anchoring Resistance:</strong> Single flat prices (e.g. $450) trigger sticker shock. Breaking down the value into "House SoftWash + Free Walkway Wash" or introducing the "$50 Neighbor Route Discount" provides an instant psychological reason to buy today.</li>
+            </ul>
+          </div>
+
+          <div class="playbook-card">
+            <h3>3. TCPA & 10DLC Contractor Compliance Standards</h3>
+            <div class="compliance-rules-box">
+              <div class="rule-item">
+                <strong>Strict Quiet Hours:</strong> Never send promotional messages before 8:00 AM or after 8:00 PM recipient local time.
+              </div>
+              <div class="rule-item">
+                <strong>Mandatory Opt-Out Footer:</strong> Initial SMS touches must include "Reply STOP to opt out".
+              </div>
+              <div class="rule-item">
+                <strong>Immediate Opt-Out Honoring:</strong> If a contact replies STOP, CANCEL, or UNSUBSCRIBE, all automated sequences must be halted immediately and an opt-out confirmation issued.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 7: SETTINGS & INTEGRATIONS -->
+      <section id="tab-settings" class="tab-pane">
+        <div class="card max-w-700">
+          <div class="card-header">
+            <h3 class="card-title">Company Profile & Outreach Configuration</h3>
+            <span class="badge blue">Settings</span>
+          </div>
+          <div class="card-body">
+            <form id="settings-form" onsubmit="saveSettings(event)">
+              <div class="form-group">
+                <label class="form-label">Company Name</label>
+                <input type="text" id="setting-company-name" class="form-input" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Business Phone (SMS Sender)</label>
+                  <input type="text" id="setting-company-phone" class="form-input" required>
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Business Email</label>
+                  <input type="email" id="setting-company-email" class="form-input" required>
+                </div>
+              </div>
+
+              <h4 class="mt-6 mb-2">TCPA Quiet Hours Configuration</h4>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Earliest Send Time</label>
+                  <input type="text" id="setting-quiet-hours-end" class="form-input" value="08:00" placeholder="08:00">
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Latest Send Time (Cutoff)</label>
+                  <input type="text" id="setting-quiet-hours-start" class="form-input" value="20:00" placeholder="20:00">
+                </div>
+              </div>
+
+              <h4 class="mt-6 mb-2">Live API Connectors (Optional)</h4>
+              <p class="text-muted mb-4">Leave blank to use the built-in simulated high-fidelity message dispatcher.</p>
+              
+              <div class="form-group">
+                <label class="form-label">Twilio Account SID</label>
+                <input type="text" id="setting-twilio-sid" class="form-input" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+              </div>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Twilio Auth Token</label>
+                  <input type="password" id="setting-twilio-auth" class="form-input" placeholder="••••••••••••••••••••••••">
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Twilio Phone Number</label>
+                  <input type="text" id="setting-twilio-phone" class="form-input" placeholder="+15125550199">
+                </div>
+              </div>
+
+              <h4 class="mt-6 mb-2">Email Relay Engine & Provider Presets</h4>
+              <p class="text-muted mb-3">Select a 1-click preset below or configure custom SMTP credentials.</p>
+
+              <!-- Presets Grid -->
+              <div class="provider-preset-grid">
+                <div class="provider-preset-btn active-preset" onclick="selectPreset('zeptomail')">
+                  <div class="preset-name">
+                    <span>⚡ Zoho ZeptoMail</span>
+                    <span class="preset-price">$2.50 / 10k</span>
+                  </div>
+                  <div class="preset-desc">Prepaid token • 6 mo validity • $0.00025/email</div>
+                </div>
+
+                <div class="provider-preset-btn" onclick="selectPreset('brevo')">
+                  <div class="preset-name">
+                    <span>📧 Brevo Free</span>
+                    <span class="preset-price">$0.00 / mo</span>
+                  </div>
+                  <div class="preset-desc">300 emails/day • Free tier relay</div>
+                </div>
+
+                <div class="provider-preset-btn" onclick="selectPreset('google')">
+                  <div class="preset-name">
+                    <span>🌐 Google / Workspace</span>
+                    <span class="preset-price">Custom</span>
+                  </div>
+                  <div class="preset-desc">smtp.gmail.com with 16-char App Password</div>
+                </div>
+              </div>
+
+              <!-- ZeptoMail Netlify DNS Helper Box -->
+              <div id="zeptomail-dns-guide" class="dns-guide-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <strong style="color:#2dd4bf; font-size:0.85rem;">📋 ZeptoMail DNS Records for Netlify (gerryswindows.com)</strong>
+                  <a href="https://www.zoho.com/zeptomail/" target="_blank" style="color:#38bdf8; font-size:0.75rem; text-decoration:none;">Open ZeptoMail ↗</a>
+                </div>
+                <p class="text-muted" style="font-size:0.78rem; margin-bottom:8px;">Add these 2 records in <strong>Netlify &rarr; Domains &rarr; gerryswindows.com &rarr; DNS Settings</strong>:</p>
+                
+                <div class="dns-row">
+                  <span class="dns-header-label">1. SPF Record (TXT)</span>
+                  <div class="dns-value-code">v=spf1 include:zeptomail.net ~all</div>
+                </div>
+                <div class="dns-row">
+                  <span class="dns-header-label">2. DKIM Record (TXT)</span>
+                  <div class="dns-value-code">Name: zmail._domainkey &nbsp;|&nbsp; Value: (Copy public key string from your ZeptoMail Mail Agent)</div>
+                </div>
+              </div>
+              
+              <div class="form-row mt-4">
+                <div class="form-group flex-1">
+                  <label class="form-label">SMTP Host</label>
+                  <input type="text" id="setting-smtp-host" class="form-input" placeholder="smtp.zeptomail.com">
+                </div>
+                <div class="form-group" style="width: 120px;">
+                  <label class="form-label">Port</label>
+                  <input type="text" id="setting-smtp-port" class="form-input" value="587" placeholder="587">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">SMTP Username (Email)</label>
+                  <input type="text" id="setting-smtp-user" class="form-input" placeholder="emailapikey">
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Send Mail Token / Password</label>
+                  <input type="password" id="setting-smtp-pass" class="form-input" placeholder="Paste ZeptoMail Send Mail Token (starts with PHtE...)">
+                </div>
+              </div>
+
+              <div class="form-actions mt-4" style="display:flex; justify-content:space-between; align-items:center;">
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+              </div>
+
+              <!-- Live Test Email Console -->
+              <div class="test-email-box">
+                <h4 style="margin-bottom:6px; font-size:0.95rem;">🧪 Live Connection & Inbox Tester</h4>
+                <p class="text-muted" style="font-size:0.8rem; margin-bottom:12px;">Send an immediate diagnostic email through your active SMTP credentials to verify handshake and deliverability.</p>
+                <div style="display:flex; gap:10px;">
+                  <input type="email" id="test-email-recipient" class="form-input" style="flex:1;" placeholder="Enter recipient email (e.g. masongerry991@gmail.com)" value="masongerry991@gmail.com">
+                  <button type="button" class="btn btn-secondary" id="btn-test-email" onclick="triggerTestEmail()">
+                    <span>Send Test Email</span>
+                  </button>
+                </div>
+                <div id="test-email-result" class="hidden"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Investor Pitch & Slides (Phase 2 Pitch / 7-Min Strict Rehearsal) -->
+      <section id="tab-investor" class="tab-pane">
+        <div class="investor-deck-container">
+          
+          <!-- Pitch Deck Header Card -->
+          <div class="pitch-header-card">
+            <div>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                <h2 style="margin:0; font-size:1.4rem; color:#f8fafc;">🎙️ Phase 2 Pitch: APEX Field OS</h2>
+                <span class="badge blue">125-PT RUBRIC OPTIMIZED</span>
+                <span class="badge purple">PHASE 2 FINAL</span>
+              </div>
+              <p class="text-muted" style="margin:0; font-size:0.85rem;">
+                Official 7:00 (±10s) Investor Presentation Slide Deck, Teleprompter & Live Pitch Stopwatch.
+              </p>
+            </div>
+
+            <!-- Pitch Stopwatch Widget -->
+            <div class="pitch-timer-widget">
+              <div>
+                <div style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px;">Rehearsal Stopwatch</div>
+                <div id="pitchClockDigits" class="pitch-clock-digits">00:00</div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; gap:6px;">
+                  <button type="button" id="pitchTimerToggleBtn" class="btn btn-primary btn-sm" onclick="togglePitchTimer()" style="padding:6px 12px; font-size:0.8rem;">
+                    <span>▶ Start Timer</span>
+                  </button>
+                  <button type="button" id="pitchTimerResetBtn" class="btn btn-secondary btn-sm" onclick="resetPitchTimer()" style="padding:6px 10px; font-size:0.8rem;">
+                    <span>↺ Reset</span>
+                  </button>
+                </div>
+                <div id="pitchTimerStatusBadge" class="badge blue" style="font-size:0.7rem; padding:3px 8px; justify-content:center;">
+                  ⏱️ READY (TARGET: 7:00 ± 10s)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Slide Navigation Pills -->
+          <div class="card" style="padding: 12px 16px; margin-bottom: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:0.78rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em;">
+                11-Slide Pitch Progression (Click to Navigate)
+              </span>
+              <div style="display:flex; gap:12px; align-items:center;">
+                <span style="font-size:0.75rem; color:#64748b;">Shortcuts: <kbd style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:#cbd5e1;">←</kbd> <kbd style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:#cbd5e1;">→</kbd></span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copyGoogleSlidesDeck()" style="padding:4px 10px; font-size:0.75rem;">
+                  <span>📥 View Markdown / Slides Doc</span>
+                </button>
+              </div>
+            </div>
+            <div id="slidePillsContainer" class="slide-nav-pills"></div>
+          </div>
+
+          <!-- Main Slide Viewport Stage -->
+          <div id="slideViewportStage" class="slide-viewport-stage">
+            <!-- Topbar Meta -->
+            <div class="slide-topbar-meta">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span id="slideCategoryBadge" class="badge blue" style="font-weight:700; font-size:0.8rem;"></span>
+                <span id="slideSpeakerBadge" class="badge purple" style="font-size:0.8rem;"></span>
+                <span id="slideTargetTimeBadge" class="badge green" style="font-size:0.8rem;"></span>
+              </div>
+              <div>
+                <span id="slideRubricBadge" class="badge amber" style="font-size:0.75rem; border:1px solid rgba(245,158,11,0.3);"></span>
+              </div>
+            </div>
+
+            <!-- Slide Canvas Body -->
+            <div class="slide-canvas-body">
+              <div style="margin-bottom:18px;">
+                <h1 id="slideTitleDisplay" style="font-size:1.85rem; font-weight:800; color:#f8fafc; margin:0 0 6px 0; letter-spacing:-0.02em;"></h1>
+                <p id="slideSubtitleDisplay" style="font-size:1.05rem; color:#94a3b8; margin:0; line-height:1.4;"></p>
+              </div>
+              <div id="slideCanvasBody" style="flex:1;"></div>
+            </div>
+
+            <!-- Footer Controls -->
+            <div class="slide-footer-controls">
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="prevInvestorSlide()">
+                  <span>◀ Prev Slide</span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="nextInvestorSlide()">
+                  <span>Next Slide ▶</span>
+                </button>
+              </div>
+              <div id="slideCounterDisplay" style="font-size:0.85rem; font-weight:700; color:#cbd5e1;">
+                Slide 1 of 11
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copyCurrentSlideScript()" title="Copy spoken rehearsal script for this slide">
+                  <span>📋 Copy Script</span>
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleFullscreenDeck()" title="Present full screen">
+                  <span>⛶ Fullscreen</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Presenter Teleprompter & Speaking Notes Drawer -->
+          <div class="teleprompter-drawer mt-4">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px; margin-bottom:12px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.1rem;">🎙️</span>
+                <strong style="color:#f8fafc; font-size:0.95rem;">Word-For-Word Speaker Script (No Reading Note Cards)</strong>
+              </div>
+              <div style="display:flex; gap:12px; align-items:center; font-size:0.8rem;">
+                <span style="color:#94a3b8;">Active Speaker: <strong id="promptSpeakerName" style="color:#38bdf8;"></strong></span>
+                <span style="color:#64748b;">|</span>
+                <span style="color:#94a3b8;">Window: <strong id="promptTimeWindow" style="color:#34d399;"></strong></span>
+              </div>
+            </div>
+            <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:6px;">
+              💡 <em>Practice delivery with deliberate vocal inflection and pacing. Observe the <span class="pause-cue">PAUSE</span> markers:</em>
+            </div>
+            <div id="promptScriptText" class="script-speech-text"></div>
+            <div id="promptTransitionCue" class="transition-cue-box"></div>
+          </div>
+
+          <!-- Slide Export & PowerPoint/Google Slides Submission Helper -->
+          <div class="card mt-4" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+              <div>
+                <h4 style="margin:0 0 4px 0; font-size:1.05rem; color:#f8fafc;">📑 Google Docs & Google Slides Compatible Downloads</h4>
+                <p class="text-muted" style="margin:0; font-size:0.84rem;">
+                  100% unblocked files designed for direct upload to Google Docs, Google Slides, PowerPoint, and Canvas.
+                </p>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <a href="/APEX_Field_OS_Full_Presentation.pptx" download="APEX_Field_OS_Full_Presentation.pptx" class="btn btn-primary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                  <span>📊 Download Google Slides Deck (.pptx with Transitions & Notes)</span>
+                </a>
+                <a href="/APEX_Field_OS_Investor_Pitch_Deck.docx" download="APEX_Field_OS_Investor_Pitch_Deck.docx" class="btn btn-secondary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                  <span>📝 Download Google Doc (.docx)</span>
+                </a>
+                <a href="/APEX_Field_OS_Investor_Pitch_Deck.pdf" download="APEX_Field_OS_Investor_Pitch_Deck.pdf" class="btn btn-secondary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                  <span>📥 Safe 16:9 PDF</span>
+                </a>
+                <a href="/APEX_Field_OS_Google_Docs_Script.txt" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                  <span>📄 Plain Text Script (.txt)</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modals -->
+    <!-- Modal: Connect Quotes & Share Rep Portal -->
+    <div id="modal-connect-quotes" class="modal-overlay hidden">
+      <div class="modal-card" style="max-width: 680px;">
+        <div class="modal-header">
+          <h3>🔗 Connect Quotes & Share Rep Portal</h3>
+          <button class="modal-close" onclick="closeModal('modal-connect-quotes')">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted mb-4">Empower field reps, techs, and your website to push quotes and scheduled jobs directly into this CRM.</p>
+
+          <!-- Option 1: Mobile Portal for Reps & Techs -->
+          <div class="card mb-4" style="background: rgba(59, 130, 246, 0.06); border-color: rgba(59, 130, 246, 0.3);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="color:#60a5fa; font-size:0.95rem;">📱 Method 1: Mobile Field Rep Portal (Under 30 Sec)</strong>
+              <span class="badge blue">For Field Reps & Techs</span>
+            </div>
+            <p style="font-size:0.83rem; color:#cbd5e1; line-height:1.45; margin-bottom:10px;">
+              Share this link with your door-to-door reps, sales estimators, and technicians. They open it on their phones (Safari / Chrome) and tap <strong>"Add to Home Screen"</strong> for a native app feel.
+            </p>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="share-rep-url" class="form-input" style="font-family:monospace; font-size:0.82rem;" value="https://maui-lucy-div-implemented.trycloudflare.com/rep.html" readonly>
+              <button class="btn btn-primary btn-sm" onclick="copyShareUrl('share-rep-url')">📋 Copy Link</button>
+            </div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:6px;">
+              • Local Network Link (Same Wi-Fi): <code style="color:#38bdf8;">http://localhost:3000/rep.html</code>
+            </div>
+          </div>
+
+          <!-- Option 2: Website Inbound Quote Form (gerryswindows.com) -->
+          <div class="card mb-4" style="background: rgba(16, 185, 129, 0.06); border-color: rgba(16, 185, 129, 0.3);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="color:#34d399; font-size:0.95rem;">🌐 Method 2: Connect Your Website (gerryswindows.com)</strong>
+              <span class="badge green">Auto Speed-to-Lead</span>
+            </div>
+            <p style="font-size:0.83rem; color:#cbd5e1; line-height:1.45; margin-bottom:10px;">
+              Embed this simple HTML quote form or webhook URL on your website (Netlify, WordPress, Squarespace, Wix). Every time a customer requests a quote, it creates the lead and fires an <strong>instant &lt;90-second SMS/email follow-up</strong>!
+            </p>
+            <div class="growth-card-script-wrap mb-2">
+              <div class="growth-card-script-header">
+                <span>Webhook Endpoint (POST):</span>
+                <button class="btn btn-xs btn-secondary" onclick="copyShareUrlText('https://maui-lucy-div-implemented.trycloudflare.com/api/webhook')">Copy URL</button>
+              </div>
+              <div class="growth-card-script" style="max-height:45px;">https://maui-lucy-div-implemented.trycloudflare.com/api/webhook</div>
+            </div>
+            <details style="font-size:0.8rem; color:#94a3b8; cursor:pointer;">
+              <summary style="font-weight:600; color:#38bdf8; margin-bottom:6px;">View 1-Click Embed HTML Form Code</summary>
+              <pre style="background:#090d16; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:10px; font-size:0.75rem; overflow-x:auto; color:#e2e8f0; user-select:all;">
+&lt;!-- Gerry's Window Services Quote Form --&gt;
+&lt;form action="https://maui-lucy-div-implemented.trycloudflare.com/api/webhook" method="POST"&gt;
+  &lt;input type="text" name="name" placeholder="Your Full Name" required&gt;
+  &lt;input type="tel" name="phone" placeholder="Phone Number" required&gt;
+  &lt;input type="email" name="email" placeholder="Email Address" required&gt;
+  &lt;input type="text" name="address" placeholder="Property Address" required&gt;
+  &lt;input type="text" name="service" value="Pure DI Window Cleaning"&gt;
+  &lt;input type="hidden" name="source" value="Website Quote Form"&gt;
+  &lt;button type="submit"&gt;Get My Free Instant Quote&lt;/button&gt;
+&lt;/form&gt;</pre>
+            </details>
+          </div>
+
+          <!-- Option 3: Zapier / Make / Webhooks -->
+          <div class="card" style="background: rgba(245, 158, 11, 0.06); border-color: rgba(245, 158, 11, 0.3);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="color:#fbbf24; font-size:0.95rem;">⚡ Method 3: Zapier, Facebook Ads, or Jobber</strong>
+              <span class="badge amber">Custom Integration</span>
+            </div>
+            <p style="font-size:0.83rem; color:#cbd5e1; line-height:1.45;">
+              Send leads from Facebook Lead Forms, Google Local Services Ads, or Angi by setting up a Webhook step sending JSON:
+              <br><code style="font-size:0.75rem; color:#fde047;">{"name": "...", "phone": "...", "email": "...", "address": "...", "quote_amount": 450}</code>
+            </p>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="padding:14px 20px; border-top:1px solid var(--border-color); display:flex; justify-content:flex-end;">
+          <button class="btn btn-secondary" onclick="closeModal('modal-connect-quotes')">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Add New Lead -->
+    <div id="modal-add-lead" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Add New Exterior Service Lead</h3>
+          <button class="modal-close" onclick="closeModal('modal-add-lead')">&times;</button>
+        </div>
+        <form onsubmit="submitAddLead(event)">
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">First Name</label>
+                <input type="text" id="new-lead-first-name" class="form-input" required>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Last Name</label>
+                <input type="text" id="new-lead-last-name" class="form-input" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Phone Number</label>
+                <input type="text" id="new-lead-phone" class="form-input" placeholder="(512) 555-0123" required>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="new-lead-email" class="form-input" placeholder="homeowner@gmail.com">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Street Address</label>
+              <input type="text" id="new-lead-address" class="form-input" placeholder="7804 Oak Hollow Rd" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Property Type</label>
+                <select id="new-lead-property-type" class="form-select">
+                  <option value="Single Family">Single Family</option>
+                  <option value="Townhouse">Townhouse</option>
+                  <option value="Luxury Estate">Luxury Estate</option>
+                  <option value="Commercial / HOA">Commercial / HOA</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Approx. Sq Ft</label>
+                <input type="number" id="new-lead-sqft" class="form-input" value="2500">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Service Interest</label>
+                <select id="new-lead-service" class="form-select">
+                  <option value="House Washing & Driveway">House Washing & Driveway</option>
+                  <option value="Roof Wash & Softwash">Roof Wash & Softwash</option>
+                  <option value="Gutter Cleaning">Gutter Cleaning</option>
+                  <option value="Driveway & Walkway">Driveway & Walkway</option>
+                  <option value="Full Exterior Package">Full Exterior Package</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Quote Estimate ($)</label>
+                <input type="number" id="new-lead-quote" class="form-input" value="380">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Auto-Enroll in Campaign</label>
+              <select id="new-lead-campaign" class="form-select">
+                <option value="1">Speed-to-Lead Instant Quote Follow-Up</option>
+                <option value="2">Spring Curb Appeal Revival</option>
+                <option value="3">Fall Gutter Armor & Roof Moss Shield</option>
+                <option value="4">Commercial & HOA Property Maintenance</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-lead')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save & Enroll Lead</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Simulate Customer Reply -->
+    <div id="modal-sim-reply" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Simulate Inbound Customer Reply</h3>
+          <button class="modal-close" onclick="closeModal('modal-sim-reply')">&times;</button>
+        </div>
+        <form onsubmit="submitSimulateReply(event)">
+          <div class="modal-body">
+            <p class="text-muted mb-4">Simulate an incoming text or email from this homeowner to test real-time research categorization, sentiment scoring, and counter-scripts.</p>
+            <div class="form-group">
+              <label class="form-label">Quick Scenario Presets</label>
+              <select id="sim-preset-select" class="form-select mb-2" onchange="applySimPreset(this.value)">
+                <option value="">-- Choose a realistic homeowner scenario --</option>
+                <option value="Hi, we'd like to get this done. Can you come out this Thursday morning at 9am?">Ready to Book (Positive)</option>
+                <option value="That quote is $150 higher than another quote I got. Can you come down on the price?">Price Shock / Competitor (Negative)</option>
+                <option value="Will your softwash chemicals hurt my garden plants or my dogs in the yard?">Plant & Pet Safety Inquiry (Hesitant)</option>
+                <option value="We are having landscapers next week, can you reach back out in early spring?">Timing Delay / Spring Deferral (Neutral)</option>
+                <option value="STOP">TCPA Opt-Out / STOP (Compliance)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message Channel</label>
+              <select id="sim-channel" class="form-select">
+                <option value="SMS">SMS Text Message</option>
+                <option value="Email">Email</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Customer Message Text</label>
+              <textarea id="sim-text" class="form-textarea" rows="3" required placeholder="Enter what the homeowner replied..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-sim-reply')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Process Inbound Message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Bulk Import Leads / HOAs -->
+    <div id="modal-import-leads" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Bulk Import Leads / HOA Management Companies</h3>
+          <button class="modal-close" onclick="closeModal('modal-import-leads')">&times;</button>
+        </div>
+        <form onsubmit="submitBulkImport(event)">
+          <div class="modal-body">
+            <p class="text-muted mb-3">Import leads from past website submissions, Netlify form exports, or door-to-door spreadsheets.</p>
+
+            <!-- Netlify / Website Guide -->
+            <div style="background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8; padding: 10px 12px; border-radius: 0 6px 6px 0; margin-bottom: 14px; font-size: 0.8rem; line-height: 1.45;">
+              <strong style="color: #38bdf8;">🌐 How to export past quotes from gerryswindows.com:</strong><br>
+              1. Log into your <strong>Netlify Dashboard</strong> &rarr; click <strong>gerryswindows.com</strong><br>
+              2. Go to <strong>Forms</strong> &rarr; click your quote form &rarr; click <strong>"Download CSV"</strong><br>
+              3. Upload or drag that CSV file below to import all historical leads!
+            </div>
+
+            <!-- File Upload Zone -->
+            <div class="form-group">
+              <label class="form-label">📁 Upload CSV File</label>
+              <div style="background: var(--bg-inner); border: 2px dashed var(--border-color); border-radius: 8px; padding: 14px; text-align: center; margin-bottom: 12px;">
+                <input type="file" id="import-csv-file" accept=".csv,text/csv,text/plain" style="display:none;" onchange="handleCsvFile(event)">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('import-csv-file').click()" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
+                  <span>📂 Choose CSV File</span>
+                </button>
+                <div id="import-file-name" class="text-muted mt-2" style="font-size:0.75rem;">Supports Netlify forms, Google Sheets, or custom CSVs</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Enroll Directly into Campaign</label>
+              <select id="import-campaign-id" class="form-select">
+                <option value="4">Campaign 4: Commercial & HOA Property Maintenance (Recommended)</option>
+                <option value="1">Campaign 1: Speed-to-Lead Instant Quote Follow-Up</option>
+                <option value="2">Campaign 2: Spring Curb Appeal Revival</option>
+                <option value="3">Campaign 3: Fall Gutter Armor & Roof Moss Shield</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CSV / Text Lines (Format: Name, Email, Phone, Address, Service, Quote)</label>
+              <textarea id="import-csv-text" class="form-textarea" rows="8" placeholder="Example:
+Karen Bennett, k.bennett@associa.com, (512) 555-3101, 12500 Steiner Ranch Blvd, HOA Clubhouse Wash, 2400
+David Vance, d.vance@fsresidential.com, (512) 555-3102, 6800 Escarpment Common, Pool Deck & Tennis, 3100" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-import-leads')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Import & Enroll Contacts</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Add Scheduled Job -->
+    <div id="modal-add-job" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Schedule Field Job for Technicians</h3>
+          <button class="modal-close" onclick="closeModal('modal-add-job')">&times;</button>
+        </div>
+        <form onsubmit="submitAddJob(event)">
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Customer Name</label>
+                <input type="text" id="job-customer-name" class="form-input" required placeholder="e.g. Eleanor Vance">
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Phone</label>
+                <input type="text" id="job-phone" class="form-input" placeholder="(612) 555-0199">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Street Address</label>
+                <input type="text" id="job-address" class="form-input" required placeholder="3200 Wayzata Blvd">
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">City</label>
+                <select id="job-city" class="form-select">
+                  <option value="Wayzata">Wayzata</option>
+                  <option value="Minnetonka">Minnetonka</option>
+                  <option value="Edina">Edina</option>
+                  <option value="Eden Prairie">Eden Prairie</option>
+                  <option value="Plymouth">Plymouth</option>
+                  <option value="Woodbury">Woodbury</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Service Date</label>
+                <input type="date" id="job-date" class="form-input" required>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Time Window</label>
+                <select id="job-time-slot" class="form-select">
+                  <option value="08:30 AM">08:30 AM (Morning Slot 1)</option>
+                  <option value="11:30 AM">11:30 AM (Morning Slot 2)</option>
+                  <option value="02:00 PM">02:00 PM (Afternoon Slot)</option>
+                  <option value="04:30 PM">04:30 PM (Late Afternoon)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Assign Truck / Crew</label>
+                <select id="job-tech-id" class="form-select">
+                  <option value="1">Truck 1 - Pure DI Water Rig (Mason)</option>
+                  <option value="2">Truck 2 - SoftWash & Flatwork (Tyler & Alex)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Job Amount ($)</label>
+                <input type="number" id="job-amount" class="form-input" value="450" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Services Included</label>
+              <input type="text" id="job-services" class="form-input" value="0 PPM Pure DI Window Cleaning (Exterior) + Screen Detailing" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Crew / Site Notes</label>
+              <textarea id="job-notes" class="form-textarea" rows="2" placeholder="e.g. Gate code #1234, watch for loose dog"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-job')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Dispatch & Schedule Job</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Phone Call Outreach & Discovery Assistant -->
+    <div id="modal-call-feature" class="modal-overlay hidden">
+      <div class="modal-card" style="max-width:580px;">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.3rem;">📞</span>
+            <div>
+              <h3 style="margin:0; font-size:1.1rem;">Phone Call & Homeowner Discovery</h3>
+              <span style="font-size:0.75rem; color:var(--text-muted);">Gerry's Window Services Outreach Assistant</span>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeCallModal()">&times;</button>
+        </div>
+
+        <div class="modal-body" style="max-height:75vh; overflow-y:auto;">
+          <!-- Homeowner Contact Info & 1-Click Dial -->
+          <div style="background:var(--bg-inner); border:1px solid var(--border-color); border-radius:10px; padding:14px; margin-bottom:14px;">
+            <div class="form-row" style="margin-bottom:8px;">
+              <div class="form-group flex-1">
+                <label class="form-label">Customer / Lead Name</label>
+                <input type="text" id="call-modal-name" class="form-input" placeholder="e.g. Richard Hall">
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Phone Number</label>
+                <input type="text" id="call-modal-phone" class="form-input" placeholder="(612) 555-0100">
+              </div>
+            </div>
+            <div id="call-modal-address" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">
+              📍 Twin Cities Metro
+            </div>
+
+            <!-- Call Action Buttons -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <a id="call-modal-dial-btn" href="tel:" class="btn btn-primary" style="text-decoration:none; justify-content:center; padding:12px; font-weight:800; font-size:0.9rem; background:linear-gradient(135deg, #059669, #10b981); border:none; box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+                <span>📞</span> Call Now (Rep)
+              </a>
+              <button type="button" class="btn btn-primary" onclick="dispatchAIVoiceAgent()" style="justify-content:center; padding:12px; font-weight:800; font-size:0.9rem; background:linear-gradient(135deg, #6366f1, #8b5cf6); border:none; box-shadow:0 4px 12px rgba(99,102,241,0.35);">
+                <span>🤖</span> Dispatch Voice AI
+              </button>
+            </div>
+          </div>
+
+          <!-- Mandatory Pricing & Discovery Checklist -->
+          <div style="background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.35); border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+            <div style="color:#fde047; font-weight:800; font-size:0.85rem; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+              <span>⚠️</span> Mandatory Discovery Checklist (Always Ask!)
+            </div>
+            <ul style="margin:0; padding-left:18px; font-size:0.8rem; color:#fef08a; line-height:1.45;">
+              <li><strong>Exterior Only or Interior Too?</strong> Exterior is volume tiered; Interior hand detailing is <strong>+$10/window flat</strong>.</li>
+              <li><strong>Window Screens:</strong> Ask if there are screens to remove & clean: <strong>$5 per screen</strong>.</li>
+              <li><strong>Hard-to-Reach Windows:</strong> Ask about high ladder access, cathedral glass, or walkout basement elevations: <strong>Extra fee TBD based on severity</strong>.</li>
+            </ul>
+          </div>
+
+          <!-- Collapsible 10 Non-Leading Discovery Questions Guide -->
+          <div style="background:rgba(15,23,42,0.8); border:1px solid rgba(59,130,246,0.3); border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleCallQuestionsHelper()">
+              <strong style="color:#60a5fa; font-size:0.85rem; display:flex; align-items:center; gap:6px;">
+                <span>💡</span> 10 Non-Leading Questions (Click to Expand Script)
+              </strong>
+              <span style="color:#38bdf8; font-size:0.8rem;">Show/Hide ▾</span>
+            </div>
+            <div id="call-questions-guide" class="hidden mt-3" style="font-size:0.78rem; color:#cbd5e1; line-height:1.5;">
+              <ol style="margin:0; padding-left:18px;">
+                <li style="margin-bottom:4px;"><em>"How long has it been since the exterior glass on your home was professionally washed?"</em></li>
+                <li style="margin-bottom:4px;"><em>"What made you think about window cleaning today—an upcoming gathering, or seasonal dirt buildup?"</em></li>
+                <li style="margin-bottom:4px;"><em>"What are you noticing most when sunlight hits the glass—water spots, pollen, or dust?"</em></li>
+                <li style="margin-bottom:4px;"><em>"Are you looking just for exterior curb appeal, or full interior hand detailing as well?"</em></li>
+                <li style="margin-bottom:4px;"><em>"Do you have screens on all the windows that you'd like removed, scrubbed, and reinstalled?"</em></li>
+                <li style="margin-bottom:4px;"><em>"Are there any hard-to-reach, high-elevation, or third-story windows around the back?"</em></li>
+                <li style="margin-bottom:4px;"><em>"Do you have patio sliding doors or low glass where pets or kids leave nose or hand prints?"</em></li>
+                <li style="margin-bottom:4px;"><em>"Have you used a window cleaning service before, and was there anything you wished they had done differently?"</em></li>
+                <li style="margin-bottom:4px;"><em>"Are there any delicate flower beds, hydrangeas, or gate locks our technician should take extra care around?"</em></li>
+                <li><em>"If our Pure DI Water truck is in your neighborhood this week, what day of the week typically fits your schedule best?"</em></li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- Call Outcome & Notes -->
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label">Call Outcome / Disposition</label>
+              <select id="call-modal-outcome" class="form-select">
+                <option value="Connected">📞 Connected (Discussed Quote)</option>
+                <option value="Booked on Call">✅ Booked on Call</option>
+                <option value="Needs Follow-Up">⏰ Needs Follow-Up / Decision Maker</option>
+                <option value="Left Voicemail">📼 Left Voicemail</option>
+                <option value="No Answer / Busy">📵 No Answer / Busy</option>
+                <option value="Not Interested">❌ Not Interested</option>
+              </select>
+            </div>
+            <div class="form-group" style="width:120px;">
+              <label class="form-label">Duration</label>
+              <input type="text" id="call-modal-duration" class="form-input" value="2m" placeholder="e.g. 3m">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Call Notes</label>
+            <textarea id="call-modal-notes" class="form-textarea" rows="2" placeholder="e.g. Discussed 35 panes in/out + 12 screens ($5/ea). Quoted $650. Requested Friday 10am slot."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeCallModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveCallLog()">💾 Save Call Record</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Issue IoT Water Purity & Clarity Certificate -->
+    <div id="modal-cert" class="modal-overlay hidden">
+      <div class="modal-card" style="max-width:540px;">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.3rem;">🏆</span>
+            <div>
+              <h3 style="margin:0; font-size:1.1rem;">Issue IoT Digital Clarity Certificate</h3>
+              <span style="font-size:0.75rem; color:var(--text-muted);">Real-Time 0.00 PPM Purity & Rain Shield Dispatch</span>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeModal('modal-cert')">&times;</button>
+        </div>
+        <form onsubmit="submitGenerateCert(event)">
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Customer Name</label>
+                <input type="text" id="cert-customer-name" class="form-input" required placeholder="e.g. Eleanor Vance" value="Eleanor Vance">
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Phone (for Live SMS Delivery)</label>
+                <input type="text" id="cert-phone" class="form-input" placeholder="(612) 555-0199" value="(612) 555-0199">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Service Street Address</label>
+                <input type="text" id="cert-address" class="form-input" required placeholder="2480 Ferndale Rd" value="2480 Ferndale Rd">
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">City</label>
+                <select id="cert-city" class="form-select">
+                  <option value="Wayzata">Wayzata</option>
+                  <option value="Minnetonka">Minnetonka</option>
+                  <option value="Edina">Edina</option>
+                  <option value="Eden Prairie">Eden Prairie</option>
+                  <option value="Plymouth">Plymouth</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Panes Detached & Cleaned</label>
+                <input type="number" id="cert-panes" class="form-input" value="38">
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Pure DI Water Used (Gal)</label>
+                <input type="number" step="0.1" id="cert-gallons" class="form-input" value="48.5">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Purification Rig</label>
+                <select id="cert-truck" class="form-select">
+                  <option value="Truck 1 - Pure DI Water Rig">Truck 1 - Pure DI Water Rig (0 PPM)</option>
+                  <option value="Truck 2 - SoftWash & Flatwork">Truck 2 - SoftWash & Flatwork (0 PPM)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Technician</label>
+                <select id="cert-tech" class="form-select">
+                  <option value="Mason Gerry (Lead Tech)">Mason Gerry (Lead Tech)</option>
+                  <option value="Tyler & Alex (Crew)">Tyler & Alex (Crew)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="background:rgba(16, 185, 129, 0.08); border:1px solid rgba(16, 185, 129, 0.3); border-radius:8px; padding:10px 14px; font-size:0.78rem; color:#cbd5e1; margin-top:8px;">
+              <strong style="color:#34d399;">✓ Guaranteed 48-Hour Rain Shield:</strong> Automatically generates digital certificate hash and sends customer an instant SMS link with 1-click crew tipping & 5-star review integration.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-cert')">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg, #10b981, #059669);">
+              🏆 Generate & Send Certificate
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
+    </div><!-- End .app-main-wrapper -->
+  </div><!-- End #app -->
+
+  <script src="js/app.js"></script>
+</body>
+</html>
