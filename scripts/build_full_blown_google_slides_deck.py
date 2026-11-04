@@ -11,6 +11,9 @@ Full-Blown Presentation Generator for Google Slides Import:
 - Complete Spoken Presenter Notes on Every Slide
 """
 
+from legacy_materials_guard import require_legacy_materials_acknowledgement
+require_legacy_materials_acknowledgement()
+
 import os
 import subprocess
 from pptx import Presentation

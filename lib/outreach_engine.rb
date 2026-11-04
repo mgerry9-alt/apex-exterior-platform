@@ -1,4 +1,5 @@
 require 'time'
+require 'cgi'
 require_relative 'messaging_provider'
 require_relative 'research_engine'
 
@@ -23,14 +24,20 @@ module ExteriorOutreach
 
     # Enroll a contact into a campaign
     def enroll_contact(contact_id, campaign_id)
+      first_step = @db.get_first_row("SELECT delay_hours FROM campaign_steps WHERE campaign_id = ? AND step_order = 1", campaign_id)
+      return false unless first_step
+      first_run = Time.now + (first_step['delay_hours'].to_i * 3600)
       @db.execute <<-SQL, campaign_id, contact_id, Time.now.strftime('%Y-%m-%d %H:%M:%S'), Time.now.strftime('%Y-%m-%d %H:%M:%S')
         INSERT OR REPLACE INTO campaign_enrollments (campaign_id, contact_id, current_step, status, enrolled_at, next_run_at)
         VALUES (?, ?, 1, 'Active', ?, ?);
       SQL
+      @db.execute("UPDATE campaign_enrollments SET next_run_at = ? WHERE campaign_id = ? AND contact_id = ?",
+        first_run.strftime('%Y-%m-%d %H:%M:%S'), campaign_id, contact_id)
+      true
     end
 
     # Process pending drip sequence steps
-    def process_pending_drips(force_bypass_quiet_hours = false)
+    def process_pending_drips
       results = []
       settings = get_settings
 
@@ -38,11 +45,13 @@ module ExteriorOutreach
       enrollments = @db.execute <<-SQL
         SELECT ce.*, c.first_name, c.last_name, c.phone, c.email, c.address, c.city,
                c.property_type, c.property_sqft, c.service_interest, c.quote_amount,
-               c.opt_out_sms, c.opt_out_email, cmp.name as campaign_name, cmp.status as campaign_status
+               c.opt_out_sms, c.opt_out_email, c.sms_consent, c.email_consent,
+               cmp.name as campaign_name, cmp.status as campaign_status
         FROM campaign_enrollments ce
         JOIN contacts c ON ce.contact_id = c.id
         JOIN campaigns cmp ON ce.campaign_id = cmp.id
         WHERE ce.status = 'Active' AND cmp.status = 'Active'
+          AND (ce.next_run_at IS NULL OR datetime(ce.next_run_at) <= datetime('now', 'localtime'))
       SQL
 
       enrollments.each do |enr|
@@ -60,20 +69,17 @@ module ExteriorOutreach
         end
 
         # Check opt-out
-        if step['channel'] == 'SMS' && enr['opt_out_sms'] == 1
-          @db.execute("UPDATE campaign_enrollments SET status = 'Skipped_OptOut' WHERE id = ?", enr['id'])
-          results << { status: 'skipped', reason: 'Contact opted out of SMS', contact: enr['first_name'] }
+        channel_is_sms = step['channel'] == 'SMS'
+        channel_opted_out = channel_is_sms ? enr['opt_out_sms'] == 1 : enr['opt_out_email'] == 1
+        channel_consented = channel_is_sms ? enr['sms_consent'] == 1 : enr['email_consent'] == 1
+        if channel_opted_out || !channel_consented
+          advance_enrollment(enr)
+          results << { status: 'skipped', reason: channel_opted_out ? 'Contact opted out' : 'No recorded channel consent', contact: enr['first_name'] }
           next
         end
 
-        if step['channel'] == 'Email' && enr['opt_out_email'] == 1
-          @db.execute("UPDATE campaign_enrollments SET status = 'Skipped_OptOut' WHERE id = ?", enr['id'])
-          results << { status: 'skipped', reason: 'Contact opted out of Email', contact: enr['first_name'] }
-          next
-        end
-
-        # TCPA Quiet Hours Check for SMS
-        if step['channel'] == 'SMS' && !within_quiet_hours? && !force_bypass_quiet_hours
+        # Use the business-local process timezone; never allow a request to bypass this gate.
+        if channel_is_sms && !within_quiet_hours?
           results << { status: 'deferred', reason: 'Quiet hours active (Outside 8AM - 8PM)', contact: enr['first_name'] }
           next
         end
@@ -106,26 +112,25 @@ module ExteriorOutreach
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         SQL
 
-        # Advance enrollment
-        next_step_num = enr['current_step'] + 1
-        has_next = @db.get_first_row("SELECT id FROM campaign_steps WHERE campaign_id = ? AND step_order = ?", enr['campaign_id'], next_step_num)
-
-        if has_next
-          @db.execute <<-SQL, next_step_num, Time.now.strftime('%Y-%m-%d %H:%M:%S'), enr['id']
-            UPDATE campaign_enrollments
-            SET current_step = ?, last_sent_at = ?
-            WHERE id = ?
-          SQL
-        else
-          @db.execute <<-SQL, Time.now.strftime('%Y-%m-%d %H:%M:%S'), enr['id']
-            UPDATE campaign_enrollments
-            SET status = 'Completed', last_sent_at = ?
-            WHERE id = ?
-          SQL
+        unless send_result[:success]
+          attempts = enr['attempt_count'].to_i + 1
+          failed = attempts >= 5
+          retry_at = Time.now + 300
+          error = (send_result[:error] || 'Provider rejected message').to_s[0, 500]
+          if failed
+            @db.execute("UPDATE campaign_enrollments SET status = 'Failed', attempt_count = ?, last_error = ? WHERE id = ?",
+              attempts, error, enr['id'])
+          else
+            @db.execute("UPDATE campaign_enrollments SET attempt_count = ?, last_error = ?, next_run_at = ? WHERE id = ?",
+              attempts, error, retry_at.strftime('%Y-%m-%d %H:%M:%S'), enr['id'])
+          end
+          results << { status: 'failed', retrying: !failed, reason: error, contact: enr['first_name'] }
+          next
         end
 
+        advance_enrollment(enr, last_sent: true)
         results << {
-          status: 'sent',
+          status: send_result[:status] || 'accepted',
           channel: step['channel'],
           contact: "#{enr['first_name']} #{enr['last_name']}",
           campaign: enr['campaign_name'],
@@ -134,6 +139,28 @@ module ExteriorOutreach
       end
 
       results
+    end
+
+    def advance_enrollment(enrollment, last_sent: false)
+      next_step_num = enrollment['current_step'] + 1
+      next_step = @db.get_first_row("SELECT id, delay_hours FROM campaign_steps WHERE campaign_id = ? AND step_order = ?",
+        enrollment['campaign_id'], next_step_num)
+      now = Time.now
+      if next_step
+        next_run = now + (next_step['delay_hours'].to_i * 3600)
+        if last_sent
+          @db.execute("UPDATE campaign_enrollments SET current_step = ?, last_sent_at = ?, next_run_at = ?, attempt_count = 0, last_error = NULL WHERE id = ?",
+            next_step_num, now.strftime('%Y-%m-%d %H:%M:%S'), next_run.strftime('%Y-%m-%d %H:%M:%S'), enrollment['id'])
+        else
+          @db.execute("UPDATE campaign_enrollments SET current_step = ?, next_run_at = ? WHERE id = ?",
+            next_step_num, next_run.strftime('%Y-%m-%d %H:%M:%S'), enrollment['id'])
+        end
+      elsif last_sent
+        @db.execute("UPDATE campaign_enrollments SET status = 'Completed', last_sent_at = ? WHERE id = ?",
+          now.strftime('%Y-%m-%d %H:%M:%S'), enrollment['id'])
+      else
+        @db.execute("UPDATE campaign_enrollments SET status = 'Completed' WHERE id = ?", enrollment['id'])
+      end
     end
 
     # Handle incoming SMS or Email response
@@ -178,8 +205,6 @@ module ExteriorOutreach
         end
         # Pause any active campaign enrollments
         @db.execute("UPDATE campaign_enrollments SET status = 'Opted_Out' WHERE contact_id = ?", contact['id'])
-      elsif analysis[:intent_category] == 'BOOKING_READY'
-        @db.execute("UPDATE contacts SET status = 'Booked' WHERE id = ?", contact['id'])
       end
 
       # Store response research analysis
@@ -189,13 +214,9 @@ module ExteriorOutreach
       SQL
       response_id = @db.last_insert_row_id
 
-      # Autonomous AI Auto-Pilot: If enabled, immediately dispatch recommended reply
+      # Suggestions are for human review only; inbound messages never trigger an
+      # automatic reply from this prototype.
       auto_replied = false
-      settings = get_settings
-      if settings['ai_autopilot_enabled'] == 'true' && analysis[:intent_category] != 'OPT_OUT' && analysis[:recommended_reply] && !analysis[:recommended_reply].strip.empty?
-        reply_res = send_direct_reply(contact['id'], analysis[:recommended_reply], channel)
-        auto_replied = true if reply_res[:success]
-      end
 
       {
         message_id: message_id,
@@ -212,8 +233,21 @@ module ExteriorOutreach
     def send_direct_reply(contact_id, body, channel = 'SMS')
       contact = @db.get_first_row("SELECT * FROM contacts WHERE id = ?", contact_id)
       return { success: false, error: 'Contact not found' } unless contact
+      return { success: false, error: 'Unsupported message channel' } unless ['SMS', 'Email'].include?(channel)
 
       settings = get_settings
+
+      if channel == 'SMS' && !within_quiet_hours?
+        return { success: false, error: 'SMS quiet hours are active' }
+      end
+
+      if (channel == 'SMS' && contact['opt_out_sms'] == 1) || (channel != 'SMS' && contact['opt_out_email'] == 1)
+        return { success: false, error: 'Contact has opted out of this channel' }
+      end
+      consented = channel == 'SMS' ? contact['sms_consent'] == 1 : contact['email_consent'] == 1
+      inbound = @db.get_first_row("SELECT id FROM messages WHERE contact_id = ? AND channel = ? AND direction = 'inbound' LIMIT 1",
+        contact_id, channel)
+      return { success: false, error: 'No recorded channel consent or inbound request' } unless consented || inbound
 
       if channel == 'SMS'
         res = MessagingProvider.send_sms(to: contact['phone'], body: body, settings: settings)
@@ -227,19 +261,20 @@ module ExteriorOutreach
         )
       end
 
-      @db.execute <<-SQL, contact['id'], channel, 'outbound', settings['company_phone'] || 'ApexExterior', contact['phone'] || contact['email'], "Outreach Message", body, 'sent', Time.now.strftime('%Y-%m-%d %H:%M:%S')
+      status = res[:success] ? (res[:status] || 'accepted') : 'failed'
+      @db.execute <<-SQL, contact['id'], channel, 'outbound', settings['company_phone'] || 'ApexExterior', contact['phone'] || contact['email'], "Outreach Message", body, status, Time.now.strftime('%Y-%m-%d %H:%M:%S')
         INSERT INTO messages (contact_id, channel, direction, sender, recipient, subject, body, status, sent_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
       SQL
 
-      { success: true, channel: channel, body: body }
+      res.merge(channel: channel, body: body)
     end
 
     private
 
     def render_template(template, contact, settings, channel)
       company_name = settings['company_name'] || 'Apex Exterior Services'
-      phone = settings['company_phone'] || '(512) 894-2200'
+      phone = settings['company_phone'].to_s
       opt_out_footer = channel == 'SMS' ? "\n\nReply STOP to opt out." : "\n\nTo unsubscribe, reply UNSUBSCRIBE."
 
       quote_str = contact['quote_amount'] && contact['quote_amount'].to_f > 0 ? "$#{contact['quote_amount'].to_i}" : "$289"
@@ -258,9 +293,9 @@ module ExteriorOutreach
     end
 
     def format_email_html(text, settings, contact)
-      company = settings['company_name'] || 'Apex Exterior Services'
-      phone = settings['company_phone'] || '(512) 894-2200'
-      paragraphs = text.split("\n\n").map { |p| "<p style='margin: 0 0 14px 0; line-height: 1.6; color: #374151;'>#{p.gsub("\n", "<br/>")}</p>" }.join
+      company = CGI.escapeHTML(settings['company_name'].to_s.empty? ? 'Apex Exterior Demo' : settings['company_name'])
+      phone = CGI.escapeHTML(settings['company_phone'].to_s)
+      paragraphs = text.to_s.split("\n\n").map { |p| "<p style='margin: 0 0 14px 0; line-height: 1.6; color: #374151;'>#{CGI.escapeHTML(p).gsub("\n", "<br/>")}</p>" }.join
 
       <<-HTML
         <!DOCTYPE html>
@@ -284,15 +319,15 @@ module ExteriorOutreach
               <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8;">Professional Softwash & Exterior Property Care</p>
             </div>
             <div class="content">
-              <div class="badge">Eco-Safe & Insured Property Specialists</div>
+              <div class="badge">Prototype message — verify all service details</div>
               #{paragraphs}
               <div style="text-align: center; margin-top: 24px;">
                 <a href="#" class="button">View Interactive Quote & Availability</a>
               </div>
             </div>
             <div class="footer">
-              <p style="margin: 0 0 6px 0;">#{company} • #{phone} • Licensed & Insured ($2M Liability Coverage)</p>
-              <p style="margin: 0;">100% Plant & Pet Safe Detergents • Zero-Pressure Softwash Guarantee</p>
+              <p style="margin: 0 0 6px 0;">#{company} • #{phone}</p>
+              <p style="margin: 0;">Demo message. Review service terms before sending.</p>
               <p style="margin: 8px 0 0 0; font-size: 11px; color: #9ca3af;">To manage email preferences or unsubscribe, reply UNSUBSCRIBE.</p>
             </div>
           </div>

@@ -2,6 +2,9 @@
 """
 Generate a presentation PDF (16:9 widescreen) and PPTX presentation for direct Google Slides import.
 """
+from legacy_materials_guard import require_legacy_materials_acknowledgement
+require_legacy_materials_acknowledgement()
+
 import os
 import subprocess
 import sys

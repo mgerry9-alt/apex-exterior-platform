@@ -5,9 +5,11 @@ require 'json'
 module ExteriorOutreach
   class MessagingProvider
     def self.send_sms(to:, body:, settings: {})
-      twilio_sid = settings['twilio_account_sid'] || ENV['TWILIO_ACCOUNT_SID']
-      twilio_auth = settings['twilio_auth_token'] || ENV['TWILIO_AUTH_TOKEN']
-      twilio_from = settings['twilio_phone_number'] || ENV['TWILIO_PHONE_NUMBER']
+      return simulate_sms(to, body) unless ENV['APEX_ENABLE_LIVE_MESSAGING'] == 'true'
+
+      twilio_sid = ENV['TWILIO_ACCOUNT_SID']
+      twilio_auth = ENV['TWILIO_AUTH_TOKEN']
+      twilio_from = ENV['TWILIO_PHONE_NUMBER']
 
       if twilio_sid && !twilio_sid.empty? && twilio_auth && !twilio_auth.empty? && twilio_from && !twilio_from.empty?
         send_twilio_sms(to, twilio_from, body, twilio_sid, twilio_auth)
@@ -17,12 +19,16 @@ module ExteriorOutreach
     end
 
     def self.send_email(to:, subject:, body_html:, body_text:, settings: {})
-      sendgrid_key = settings['sendgrid_api_key'] || ENV['SENDGRID_API_KEY']
-      smtp_host = settings['smtp_host'] || ENV['SMTP_HOST']
-      from_email = settings['company_email'] || 'info@gerryswindows.com'
-      from_name = settings['company_name'] || "Gerry's Window Services"
+      return simulate_email(to, settings['company_email'] || 'no-reply@example.invalid', subject, body_text) unless ENV['APEX_ENABLE_LIVE_MESSAGING'] == 'true'
 
-      if smtp_host && !smtp_host.empty?
+      sendgrid_key = ENV['SENDGRID_API_KEY']
+      smtp_host = settings['smtp_host'] || ENV['SMTP_HOST']
+      from_email = settings['company_email'].to_s.strip
+      from_name = settings['company_name'].to_s.strip
+      from_email = 'no-reply@example.invalid' if from_email.empty?
+      from_name = 'Apex Exterior Demo' if from_name.empty?
+
+      if smtp_host && !smtp_host.empty? && ENV['SMTP_PASSWORD'] && !ENV['SMTP_PASSWORD'].empty?
         send_smtp_email(to, from_email, from_name, subject, body_html, body_text, settings)
       elsif sendgrid_key && !sendgrid_key.empty?
         send_sendgrid_email(to, from_email, from_name, subject, body_html, body_text, sendgrid_key)
@@ -86,7 +92,7 @@ module ExteriorOutreach
       host = settings['smtp_host']
       port = (settings['smtp_port'] || 587).to_i
       user = settings['smtp_user'] || from_email
-      pass = settings['smtp_password']
+      pass = ENV['SMTP_PASSWORD']
       marker = "BOUNDARY_GERRYS_WINDOWS_#{Time.now.to_i}"
 
       clean_name = from_name.gsub('"', '')
@@ -132,7 +138,7 @@ module ExteriorOutreach
         success: true,
         provider: 'simulator',
         id: "sim_sms_#{Time.now.to_i}_#{rand(1000..9999)}",
-        status: 'delivered',
+        status: 'simulated',
         delivered_at: Time.now.strftime('%Y-%m-%d %H:%M:%S'),
         note: 'Simulated carrier delivery via local outreach gateway'
       }
@@ -143,7 +149,7 @@ module ExteriorOutreach
         success: true,
         provider: 'simulator',
         id: "sim_eml_#{Time.now.to_i}_#{rand(1000..9999)}",
-        status: 'delivered',
+        status: 'simulated',
         delivered_at: Time.now.strftime('%Y-%m-%d %H:%M:%S'),
         note: 'Simulated inbox delivery via local outreach gateway'
       }

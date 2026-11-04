@@ -5,9 +5,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 cd "$DIR"
 
 echo "================================================================="
-echo " Starting ApexExterior Outreach & Response Intelligence Platform"
+echo " Starting Apex Exterior legacy evidence-review demo"
 echo "================================================================="
-PORT="${PORT:-3000}"
-export PORT
+APEX_PORT="${APEX_PORT:-3001}"
+export APEX_PORT
 
 ruby server.rb

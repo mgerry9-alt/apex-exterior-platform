@@ -1,7 +1,6 @@
 require 'sqlite3'
 require 'json'
 require 'fileutils'
-require_relative 'growth_playbook'
 
 module ExteriorOutreach
   class Database
@@ -54,7 +53,7 @@ module ExteriorOutreach
           phone TEXT,
           email TEXT,
           address TEXT,
-          city TEXT DEFAULT 'Austin',
+          city TEXT DEFAULT '',
           state TEXT DEFAULT 'TX',
           zip TEXT,
           property_type TEXT DEFAULT 'Single Family',
@@ -64,6 +63,9 @@ module ExteriorOutreach
           status TEXT DEFAULT 'New Lead',
           opt_out_sms INTEGER DEFAULT 0,
           opt_out_email INTEGER DEFAULT 0,
+          sms_consent INTEGER DEFAULT 0,
+          email_consent INTEGER DEFAULT 0,
+          consent_recorded_at TEXT,
           quote_amount REAL DEFAULT 0.0,
           notes TEXT,
           created_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -106,6 +108,8 @@ module ExteriorOutreach
           enrolled_at TEXT DEFAULT CURRENT_TIMESTAMP,
           last_sent_at TEXT,
           next_run_at TEXT,
+          attempt_count INTEGER DEFAULT 0,
+          last_error TEXT,
           FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE,
           FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
           UNIQUE(campaign_id, contact_id)
@@ -182,7 +186,7 @@ module ExteriorOutreach
           customer_name TEXT NOT NULL,
           phone TEXT,
           address TEXT NOT NULL,
-          city TEXT DEFAULT 'Wayzata',
+          city TEXT DEFAULT 'Demo City',
           job_date TEXT NOT NULL,
           time_slot TEXT NOT NULL,
           services TEXT NOT NULL,
@@ -196,12 +200,20 @@ module ExteriorOutreach
         );
       SQL
 
+      # Enforce the slot invariant in SQLite so concurrent requests cannot race
+      # through an application-level check before inserting a booking.
+      @db.execute <<-SQL
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_scheduled_jobs_active_slot
+        ON scheduled_jobs (technician_id, job_date, time_slot)
+        WHERE status != 'Cancelled';
+      SQL
+
       @db.execute <<-SQL
         CREATE TABLE IF NOT EXISTS d2d_knocks (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           rep_name TEXT NOT NULL,
           address TEXT NOT NULL,
-          city TEXT DEFAULT 'Minnetonka',
+          city TEXT DEFAULT 'Demo City',
           neighborhood TEXT,
           homeowner_name TEXT,
           phone TEXT,
@@ -244,12 +256,12 @@ module ExteriorOutreach
           phone TEXT,
           email TEXT,
           address TEXT NOT NULL,
-          city TEXT DEFAULT 'Wayzata',
+          city TEXT DEFAULT 'Demo City',
           subtotal REAL DEFAULT 0.0,
           tax REAL DEFAULT 0.0,
           total_amount REAL DEFAULT 0.0,
           tip_amount REAL DEFAULT 0.0,
-          status TEXT DEFAULT 'Unpaid',
+          status TEXT DEFAULT 'Draft',
           payment_method TEXT,
           paid_at TEXT,
           line_items_json TEXT,
@@ -268,20 +280,20 @@ module ExteriorOutreach
           phone TEXT,
           email TEXT,
           address TEXT NOT NULL,
-          city TEXT DEFAULT 'Wayzata',
+          city TEXT DEFAULT 'Demo City',
           panes_count INTEGER DEFAULT 30,
           stories INTEGER DEFAULT 2,
-          tier_bronze_title TEXT DEFAULT 'Essential Pure DI Exterior Wash',
-          tier_bronze_price REAL DEFAULT 299.0,
-          tier_bronze_desc TEXT DEFAULT '100% Spotless 0 PPM Pure DI Water Wash for all exterior glass & frames.',
-          tier_silver_title TEXT DEFAULT 'Signature Interior & Exterior + Screens',
-          tier_silver_price REAL DEFAULT 465.0,
-          tier_silver_desc TEXT DEFAULT 'Interior & exterior detailing + track vacuuming + wet screen wash detailing.',
-          tier_gold_title TEXT DEFAULT 'Estate Master Care + Eave Spider Shield',
-          tier_gold_price REAL DEFAULT 749.0,
-          tier_gold_desc TEXT DEFAULT 'Complete inside/out glass + screen detailing + organic eave web-shield treatment.',
+          tier_bronze_title TEXT DEFAULT 'Demo option 1',
+          tier_bronze_price REAL DEFAULT 0.0,
+          tier_bronze_desc TEXT DEFAULT 'Illustrative only; not a customer offer.',
+          tier_silver_title TEXT DEFAULT 'Demo option 2',
+          tier_silver_price REAL DEFAULT 0.0,
+          tier_silver_desc TEXT DEFAULT 'Illustrative only; not a customer offer.',
+          tier_gold_title TEXT DEFAULT 'Demo option 3',
+          tier_gold_price REAL DEFAULT 0.0,
+          tier_gold_desc TEXT DEFAULT 'Illustrative only; not a customer offer.',
           selected_tier TEXT,
-          status TEXT DEFAULT 'Sent',
+          status TEXT DEFAULT 'Draft',
           accepted_at TEXT,
           created_at TEXT DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE SET NULL
@@ -293,15 +305,15 @@ module ExteriorOutreach
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           technician_id INTEGER,
           truck_name TEXT NOT NULL,
-          inflow_ppm INTEGER DEFAULT 284,
+          inflow_ppm INTEGER DEFAULT 0,
           outflow_ppm INTEGER DEFAULT 0,
-          flow_rate_gpm REAL DEFAULT 1.8,
-          system_pressure_psi INTEGER DEFAULT 65,
-          resin_life_percent INTEGER DEFAULT 94,
-          gallons_filtered_today REAL DEFAULT 84.5,
-          status TEXT DEFAULT 'Active - Purifying',
+          flow_rate_gpm REAL DEFAULT 0.0,
+          system_pressure_psi INTEGER DEFAULT 0,
+          resin_life_percent INTEGER DEFAULT 0,
+          gallons_filtered_today REAL DEFAULT 0.0,
+          status TEXT DEFAULT 'Simulated demo; not connected to hardware',
           source_mode TEXT DEFAULT 'simulated',
-          last_reading_at TEXT DEFAULT CURRENT_TIMESTAMP
+          last_reading_at TEXT
         );
       SQL
 
@@ -313,21 +325,39 @@ module ExteriorOutreach
           contact_id INTEGER,
           customer_name TEXT NOT NULL,
           address TEXT NOT NULL,
-          city TEXT DEFAULT 'Wayzata',
-          technician_name TEXT DEFAULT 'Mason Gerry',
-          truck_name TEXT DEFAULT 'Truck 1 - Pure DI Water Rig',
-          municipal_inflow_ppm INTEGER DEFAULT 284,
+          city TEXT DEFAULT 'Demo City',
+          technician_name TEXT DEFAULT 'Demo Technician',
+          truck_name TEXT DEFAULT 'Demo vehicle',
+          municipal_inflow_ppm INTEGER DEFAULT 0,
           purified_outflow_ppm INTEGER DEFAULT 0,
-          gallons_used REAL DEFAULT 42.0,
-          panes_cleaned INTEGER DEFAULT 30,
-          purity_verified_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          gallons_used REAL DEFAULT 0.0,
+          panes_cleaned INTEGER DEFAULT 0,
+          purity_verified_at TEXT,
           rain_shield_expires_at TEXT,
-          status TEXT DEFAULT 'TDS Verified: 0 PPM Process Water',
+          status TEXT DEFAULT 'SIMULATED DEMO — NOT A FIELD MEASUREMENT',
           source_mode TEXT DEFAULT 'simulated'
         );
       SQL
 
       # Graceful migration for existing databases
+      { 'sms_consent' => 'INTEGER DEFAULT 0',
+        'email_consent' => 'INTEGER DEFAULT 0',
+        'consent_recorded_at' => 'TEXT' }.each do |column, definition|
+        begin
+          @db.execute("ALTER TABLE contacts ADD COLUMN #{column} #{definition}")
+        rescue SQLite3::SQLException
+          # Column already exists.
+        end
+      end
+
+      { 'attempt_count' => 'INTEGER DEFAULT 0', 'last_error' => 'TEXT' }.each do |column, definition|
+        begin
+          @db.execute("ALTER TABLE campaign_enrollments ADD COLUMN #{column} #{definition}")
+        rescue SQLite3::SQLException
+          # Column already exists.
+        end
+      end
+
       begin
         @db.execute("ALTER TABLE iot_telemetry ADD COLUMN source_mode TEXT DEFAULT 'simulated'")
       rescue SQLite3::SQLException
@@ -340,47 +370,19 @@ module ExteriorOutreach
         # Column already exists
       end
 
-      # Modernize legacy misleading claims in existing database
-      @db.execute("UPDATE clarity_certificates SET status = 'TDS Verified: 0 PPM Process Water' WHERE status LIKE '%100% Pure%'")
+      # Legacy source copies could not establish field provenance.
+      @db.execute("UPDATE clarity_certificates SET status = 'SIMULATED DEMO — NOT A FIELD MEASUREMENT', source_mode = 'simulated'")
+      @db.execute("UPDATE iot_telemetry SET status = 'Simulated demo; legacy provenance unverified', source_mode = 'simulated'")
+
+      # Provider credentials must be supplied through process environment only.
+      @db.execute("DELETE FROM settings WHERE key IN ('smtp_password', 'twilio_auth_token', 'sendgrid_api_key')")
 
       seed_crm_defaults
     end
 
     def seed_crm_defaults
-      tech_count = @db.get_first_row("SELECT COUNT(*) as count FROM technicians")['count'] || 0
-      if tech_count == 0
-        @db.execute("INSERT INTO technicians (name, phone, truck_name, color_code, status) VALUES (?, ?, ?, ?, ?)",
-          "Mason Gerry (Lead Tech)", "(612) 666-7720", "Truck 1 - Pure DI Water Rig", "#3b82f6", "Active")
-        @db.execute("INSERT INTO technicians (name, phone, truck_name, color_code, status) VALUES (?, ?, ?, ?, ?)",
-          "Tyler & Alex (Crew)", "(612) 666-7721", "Truck 2 - SoftWash & Flatwork", "#10b981", "Active")
-      end
-
-      # Seed Growth Ideas & Franchise Playbooks
-      GrowthPlaybook.seed_ideas(@db)
-      GrowthPlaybook.seed_franchise_campaigns(@db)
-
-      # Seed IoT Rig Telemetry Telematics
-      iot_count = @db.get_first_row("SELECT COUNT(*) as count FROM iot_telemetry")['count'] || 0
-      if iot_count == 0
-        @db.execute <<-SQL, 1, "Truck 1 - Pure DI Water Rig", 284, 0, 1.8, 65, 94, 112.5, "Active - Purifying", "simulated"
-          INSERT INTO iot_telemetry (technician_id, truck_name, inflow_ppm, outflow_ppm, flow_rate_gpm, system_pressure_psi, resin_life_percent, gallons_filtered_today, status, source_mode)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-        SQL
-        @db.execute <<-SQL, 2, "Truck 2 - SoftWash & Flatwork", 284, 0, 2.4, 70, 88, 165.0, "Active - Purifying", "simulated"
-          INSERT INTO iot_telemetry (technician_id, truck_name, inflow_ppm, outflow_ppm, flow_rate_gpm, system_pressure_psi, resin_life_percent, gallons_filtered_today, status, source_mode)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-        SQL
-      end
-
-      # Seed Initial Verified IoT Clarity Certificate
-      cert_count = @db.get_first_row("SELECT COUNT(*) as count FROM clarity_certificates")['count'] || 0
-      if cert_count == 0
-        expires = (Time.now + (44 * 3600)).strftime('%Y-%m-%d %H:%M:%S')
-        @db.execute <<-SQL, "CERT-2610-8842", 1, 1, "Eleanor Vance", "2480 Ferndale Rd, Wayzata, MN", "Wayzata", "Mason Gerry (Lead Tech)", "Truck 1 - Pure DI Water Rig", 284, 0, 48.5, 38, expires, "TDS Verified: 0 PPM Process Water", "simulated"
-          INSERT INTO clarity_certificates (cert_number, job_id, contact_id, customer_name, address, city, technician_name, truck_name, municipal_inflow_ppm, purified_outflow_ppm, gallons_used, panes_cleaned, rain_shield_expires_at, status, source_mode)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-        SQL
-      end
+      # Fresh installs deliberately contain no synthetic workers, jobs,
+      # campaigns, customers, or telemetry that could be mistaken for activity.
     end
   end
 end

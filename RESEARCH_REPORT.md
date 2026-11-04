@@ -1,3 +1,5 @@
+ > Historical research draft. Its claims and recommendations are not current project evidence; verify each source, date, and product claim before reuse. The current product scope is in docs/product/requirements.md and docs/qa/release-gates.md.
+
 # Extensive Research Report: Exterior Cleaning Outreach, Response Analysis & Marketing Optimization
 
 **Company / Industry:** Exterior Cleaning & SoftWash Services (Pressure Washing, Soft Washing, Roof Cleaning, Gutter Maintenance, Concrete Restoration)  

@@ -6,6 +6,9 @@ Generate Google Docs and Google Slides compatible files:
 3. APEX_Field_OS_Google_Docs_Script.txt (Plain text script for 1-click paste into Google Docs)
 """
 
+from legacy_materials_guard import require_legacy_materials_acknowledgement
+require_legacy_materials_acknowledgement()
+
 import os
 import subprocess
 import docx

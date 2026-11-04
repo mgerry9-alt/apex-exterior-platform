@@ -8,6 +8,9 @@ Update INVESTOR_SLIDES in public/js/app.js with:
 - Minimalist, captivating HTML layouts with generous whitespace and restrained color
 """
 
+from legacy_materials_guard import require_legacy_materials_acknowledgement
+require_legacy_materials_acknowledgement()
+
 import os
 import re
 

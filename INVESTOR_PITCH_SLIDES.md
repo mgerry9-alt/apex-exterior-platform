@@ -1,3 +1,5 @@
+ > Historical draft — not approved for distribution. Revenue, market, customer, product-readiness, and performance statements require current evidence and owner review. The current verified scope is in docs/qa/release-gates.md.
+
 # 📊 GERRY'S WINDOW SERVICES (POWERED BY APEX)
 ### Master Investor Pitch Slide Deck & Speaker Script (Phase 2 Pitch — 7:00 Target Window)
 

@@ -40,6 +40,25 @@ coverage/
 *.sqlite3
 data/*.db*
 
+# Local-only operational and historical materials
+__pycache__/
+*.py[cod]
+RUN_LOG.jsonl
+WORK_REGISTER.csv
+HANDOFF_TO_BIGGER_MODEL.md
+APEX_Field_OS_Full_Presentation.pptx
+APEX_Field_OS_Google_Docs_Script.txt
+APEX_Field_OS_Investor_Pitch_Deck.docx
+APEX_Field_OS_Investor_Pitch_Deck.pdf
+APEX_Field_OS_Investor_Pitch_Deck.pptx
+Gerrys_Window_Services_Subscription_Plans.pdf
+public/APEX_Field_OS_Full_Presentation.pptx
+public/APEX_Field_OS_Google_Docs_Script.txt
+public/APEX_Field_OS_Investor_Pitch_Deck.docx
+public/APEX_Field_OS_Investor_Pitch_Deck.pdf
+public/APEX_Field_OS_Investor_Pitch_Deck.pptx
+public/Gerrys_Window_Services_Subscription_Plans.pdf
+
 # Node and Next.js foundation
 .next/
 *.tsbuildinfo
