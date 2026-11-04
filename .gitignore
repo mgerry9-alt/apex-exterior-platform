@@ -39,3 +39,7 @@ coverage/
 *.sqlite
 *.sqlite3
 data/*.db*
+
+# Node and Next.js foundation
+.next/
+*.tsbuildinfo

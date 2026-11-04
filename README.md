@@ -70,3 +70,9 @@ Open your browser to:
 
 For the comprehensive 15-page equivalent market research report, see:
 [`RESEARCH_REPORT.md`](file:///Users/masongerry/Documents/antigravity/wonderful-archimedes/RESEARCH_REPORT.md)
+
+## Field OS foundation (Node.js 24)
+
+The Ruby/WEBrick app remains the legacy local prototype. The newer founder-only Field Hub foundation is in `apps/owner-web` (Next.js) and `apps/api` (Fastify). It provides an MFA-gated owner shell, an authenticated record list, and a draft quote workflow with explicit measurement, approved-rate, and human-review steps. In development without Supabase configuration, the owner page offers a browser-session-only preview with no customer data, pricing, API write, or messaging.
+
+Install the pinned Node dependencies with `npm ci`. Start the owner preview with `npm run dev:owner`; run the Field OS API separately with `npm run dev` after configuring the required Supabase variables from `.env.example`. See [`docs/product/field-hub-workflow.md`](docs/product/field-hub-workflow.md) and [`docs/qa/release-gates.md`](docs/qa/release-gates.md) for current scope and limits. The foundation is local and not live-verified against a Supabase project.

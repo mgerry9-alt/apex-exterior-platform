@@ -1,0 +1,3 @@
+export default function SetupRequiredPage() {
+  return <main className="auth-page"><section className="auth-card"><div className="brand-mark">A</div><p className="eyebrow">APEX FIELD OS <span>ENVIRONMENT SETUP</span></p><h1>Owner access is not configured.</h1><p className="muted">This environment has no verified Supabase project and founder identity. No Field Hub data or quote operations are available.</p><div className="notice">Configure the owner web variables listed in <code>.env.example</code>, then restart the app.</div><a className="button secondary" href="/sign-in">Back to sign in</a></section></main>;
+}

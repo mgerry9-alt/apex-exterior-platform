@@ -1,0 +1,5 @@
+# Initial domain model
+
+Current migration relations: `founder_principal(subject_id, organization_id, status)` is a one-row owner binding; `founder_principal_audit` records bootstrap and offline identity changes; `owner_hub_records` is organization-scoped; `leads` stores source, counts, consent flags, request hash and idempotency key; `pricebooks` stores versioned integer-cent rates and approval/effective dates; `quotes` stores the lead and pricebook version, input/line snapshots and subtotal. Lead-to-quote foreign keys require matching organization IDs. `public.capture_lead_and_quote` is the atomic `SECURITY INVOKER` RPC called from the HTTP route.
+
+Money is integer minor units plus explicit currency. Quote snapshots are append-only and labeled `draft_requires_review`; tax is explicitly `not_configured`. Approved pricebook rates are immutable; retirement then a new version is the correction path. Missing approved/effective rates roll back lead creation. The Node API exposes a founder-only Field Hub read and lead-to-quote route. Contact/property records, customer UI, staff roles, territory, jobs, and visits are not implemented.

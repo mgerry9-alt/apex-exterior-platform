@@ -1,0 +1,33 @@
+{
+  "name": "apex-field-os-domain",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "tsx apps/api/server.ts",
+    "dev:owner": "next dev apps/owner-web --hostname 127.0.0.1",
+    "build": "tsc -p tsconfig.json",
+    "build:owner": "next build apps/owner-web",
+    "start": "node dist/apps/api/server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck:owner": "tsc -p apps/owner-web/tsconfig.json --noEmit",
+    "test": "node --import tsx --test node-tests/*.test.mjs",
+    "test:api": "node --import tsx --test node-tests/api.test.mjs",
+    "test:integration": "node --import tsx --test node-tests/api.test.mjs node-tests/field-hub-rls.test.mjs",
+    "test:pricing": "node --import tsx --test node-tests/pricing.test.mjs node-tests/field-hub-rls.test.mjs",
+    "test:security": "node --import tsx --test node-tests/api.test.mjs node-tests/authz.test.mjs node-tests/field-hub-rls.test.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.15",
+    "@types/node": "24.19.2",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
+    "fastify": "5.12.8"
+  },
+  "workspaces": ["apps/owner-web"]
+}

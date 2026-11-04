@@ -1,0 +1,37 @@
+\set ON_ERROR_STOP on
+
+\if :{?founder_subject_id}
+\else
+  \echo 'Missing required psql variable: founder_subject_id'
+  \quit 2
+\endif
+
+\if :{?organization_id}
+\else
+  \echo 'Missing required psql variable: organization_id'
+  \quit 2
+\endif
+
+begin;
+select pg_advisory_xact_lock(hashtextextended('apex-field-os-founder-bootstrap', 0));
+
+do $$
+begin
+  if exists (select 1 from app_private.founder_principal) then
+    raise exception 'Founder is already bootstrapped; follow the offline identity recovery procedure';
+  end if;
+end
+$$;
+
+insert into app_private.founder_principal (
+  singleton, subject_id, organization_id, status, provisioned_by
+)
+values (
+  true,
+  :'founder_subject_id'::uuid,
+  :'organization_id'::uuid,
+  'active',
+  session_user::text
+);
+
+commit;

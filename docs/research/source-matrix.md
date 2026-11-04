@@ -1,0 +1,18 @@
+# Research source matrix
+
+The referenced companion `Apex_Field_OS_Research_Ledger.md` was not present beside the pasted specification or in the project copy. Its S### IDs and 209 URLs are therefore unavailable; no claims are attributed to those IDs.
+
+| Source | Checked | Implication | Unknown |
+|---|---|---|---|
+| [Node.js releases](https://nodejs.org/en/about/previous-releases) | 2026-11-03 | Node 24 is in Maintenance LTS; local runtime is Node 24.16.0. | Deployment runtime parity. |
+| [Fastify TypeScript guide](https://fastify.dev/docs/latest/Reference/TypeScript/) | 2026-11-03 | Fastify 5 with TypeScript is the typed API framework for the new route layer; Node 24 exceeds Fastify 5's Node 20 minimum. | Production hosting/runtime parity remains unverified. |
+| [Fastify validation and serialization](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/) | 2026-11-03 | JSON Schema validates request bodies; the API disables AJV type coercion/default insertion for strict input handling. | Broader generated OpenAPI contract and response schemas are not built. |
+| [PostgreSQL CREATE POLICY](https://www.postgresql.org/docs/17/sql-createpolicy.html) | 2026-11-03 | RLS policies require table RLS enablement and explicit USING/WITH CHECK rules. | The migrations ran in PGlite; a separately deployed/native PostgreSQL or Supabase environment was unavailable. |
+| [Supabase Auth MFA](https://supabase.com/docs/guides/auth/auth-mfa) | 2026-11-03 | MFA assurance must be enforced in API and database policy, not just UI. | Project, owner identity, MFA enrollment, and issuer are not provisioned. |
+| [PGlite getting started](https://pglite.dev/docs/) | 2026-11-03 | Provides an in-process PostgreSQL-compatible engine used for focused migration and RLS tests. | Does not verify Supabase Auth, a deployed database, or production behavior. |
+| [Supabase Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security) | 2026-11-03 | Both SQL grants and row policies govern access; service-role credentials can bypass RLS. | No project credentials or deployment are configured; test roles/claims are simulated. |
+| [Supabase JavaScript getUser](https://supabase.com/docs/reference/javascript/auth-getuser) | 2026-11-03 | `getUser(jwt)` makes a request to Auth and returns an authentic user result suitable for authorization decisions. | No configured project or live user token is available here. |
+| [Supabase JavaScript RPC](https://supabase.com/docs/reference/javascript/rpc) | 2026-11-03 | The client can invoke Postgres functions by name with argument objects. | Live PostgREST invocation and deployed function grants remain untested. |
+| [Supabase server package guidance](https://supabase.com/docs/guides/auth/choosing-a-server-package) | 2026-11-03 | Header-based bearer auth can use a server package; this slice uses `supabase-js` `getUser(jwt)` for remote Auth verification and forwards the same user JWT. | The server package is public beta; direct client behavior is fixture-tested only, with no live identity provider configured. |
+| [Next.js App Router installation](https://nextjs.org/docs/app/getting-started/installation) | 2026-11-03 | Owner web shell uses the App Router and TypeScript on Node 24. | Live deployment runtime and build pipeline are not configured. |
+| [Supabase SSR client setup](https://supabase.com/docs/guides/auth/server-side/creating-a-client) | 2026-11-03 | Owner web uses cookie-backed browser/server clients; proxy refreshes cookies and server pages verify claims before rendering private data. | `@supabase/ssr` is beta and the cookie/MFA journey has not been checked against a configured Supabase project. |
