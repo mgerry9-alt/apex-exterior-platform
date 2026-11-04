@@ -4,6 +4,7 @@ import { founderAccessDecision } from '../../lib/founder-access';
 import { hasOwnerAuthConfig, isLocalPreviewEnabled } from '../../lib/owner-config';
 import { QuoteForm } from './quote-form';
 import { LocalQuotePreview } from './local-quote-preview';
+import { SalesOperations } from './sales-operations';
 
 type HubRecord = { id: string; record_type: string; created_at: string };
 
@@ -77,10 +78,18 @@ export default async function FieldHubPage() {
             </a>
           </div>
           <div className="nav-group">
-            <p className="nav-label">Sales workflow</p>
-            <a className="nav-link" href="#quote-intake" aria-current="page">
-              <span className="nav-icon"><FieldIcon kind="quote" /></span><span>Quote preparation</span>
-            </a>
+            <p className="nav-label">Sales & growth</p>
+            <a className="nav-link" href="#estimate-matrix"><span className="nav-icon"><FieldIcon kind="quote" /></span><span>Estimate matrix</span></a>
+            <a className="nav-link" href="#crm-leads"><span className="nav-icon"><FieldIcon kind="records" /></span><span>CRM leads</span></a>
+            <a className="nav-link" href="#invoices"><span className="nav-icon"><FieldIcon kind="empty" /></span><span>Invoices</span></a>
+          </div>
+          <div className="nav-group">
+            <p className="nav-label">Field operations</p>
+            <a className="nav-link" href="#route-telemetry"><span className="nav-icon"><FieldIcon kind="shield" /></span><span>Route & telemetry</span></a>
+          </div>
+          <div className="nav-group">
+            <p className="nav-label">Intelligence</p>
+            <a className="nav-link" href="#response-lab"><span className="nav-icon"><FieldIcon kind="quote" /></span><span>Response insights</span></a>
           </div>
         </nav>
         <div className="sidebar-bottom">
@@ -118,6 +127,7 @@ export default async function FieldHubPage() {
           </section>
 
           {unavailable && !previewMode && <div className="notice" role="status"><b>Records could not be loaded.</b> Start the Field OS API and confirm its Supabase configuration, then try again.</div>}
+          <p className="public-preview-link"><a href="/get-estimate">Open the customer estimate preview</a><span>No price or subscription is created.</span></p>
 
           <div className="workspace-grid">
             <section id="quote-intake" className="panel quote-panel" aria-labelledby="quote-heading">
@@ -146,6 +156,8 @@ export default async function FieldHubPage() {
                   : <div className="empty-state"><span className="empty-icon"><FieldIcon kind="empty" /></span><strong>{previewMode ? 'No owner records in preview' : 'No owner records yet'}</strong><p>{previewMode ? 'This browser preview is separate from business and customer data.' : 'Records will appear after an approved workflow saves them.'}</p><a className="button secondary" href="#quote-intake">{previewMode ? 'Try quote preparation' : 'Prepare an estimate'}</a></div>}
             </section>
           </div>
+
+          <SalesOperations previewMode={previewMode} />
 
           <footer className="page-footer">Apex Field OS · {previewMode ? 'Local session preview · no priced quote or customer record is created' : 'Private owner workspace · draft estimates require human review'}</footer>
         </main>
