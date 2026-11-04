@@ -17,8 +17,8 @@ const quoteErrors: Record<string, string> = {
 };
 
 export function QuoteForm() {
-  const [windows, setWindows] = useState('10');
-  const [screens, setScreens] = useState('0');
+  const [windows, setWindows] = useState('');
+  const [screens, setScreens] = useState('');
   const [result, setResult] = useState<QuoteResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [pendingKey, setPendingKey] = useState('');
@@ -39,5 +39,14 @@ export function QuoteForm() {
     finally { setBusy(false); }
   }
 
-  return <section className="quote-card"><div className="quote-intro"><span className="quote-icon" aria-hidden="true">$</span><div><strong>Internal estimate preview</strong><p>Uses the active approved pricebook. This is a draft only.</p></div></div><form onSubmit={submit} className="quote-form" aria-label="Prepare a draft quote"><label>Windows<input type="number" min="1" max="10000" required value={windows} onChange={e => { setWindows(e.target.value); setPendingKey(''); }} /></label><label>Screens<input type="number" min="0" max="10000" required value={screens} onChange={e => { setScreens(e.target.value); setPendingKey(''); }} /></label><button className="button primary" disabled={busy}>{busy ? 'Saving draft…' : 'Create draft quote'} <span aria-hidden="true">→</span></button></form>{result && <div className={result.error ? 'quote-result error-box' : 'quote-result'} role="status">{result.error ? result.error : <>Draft created · {result.quote?.status ?? 'review required'} · {typeof result.quote?.subtotal_cents === 'number' ? `$${(result.quote.subtotal_cents / 100).toFixed(2)}` : 'Amount pending'}{result.replayed ? ' · previous request returned' : ''}</>}</div>}<p className="fine-print">This tool records a manual, non-binding estimate request. It does not contact a customer or schedule work.</p></section>;
+  return <section className="quote-card">
+    <div className="quote-intro"><span className="quote-icon" aria-hidden="true">$</span><div><strong>Draft estimate request</strong><p>Uses approved rates when a pricebook is configured.</p></div></div>
+    <form onSubmit={submit} className="quote-form" aria-label="Prepare a draft quote">
+      <label>Windows<input type="number" min="1" max="10000" required value={windows} onChange={e => { setWindows(e.target.value); setPendingKey(''); }} /></label>
+      <label>Screens<input type="number" min="0" max="10000" required value={screens} onChange={e => { setScreens(e.target.value); setPendingKey(''); }} /></label>
+      <button className="button primary" disabled={busy}>{busy ? 'Saving draft…' : 'Create draft quote'} <span aria-hidden="true">→</span></button>
+    </form>
+    {result && <div className={result.error ? 'quote-result error-box' : 'quote-result'} role={result.error ? 'alert' : 'status'}>{result.error ? result.error : <>Draft created · {result.quote?.status ?? 'review required'} · {typeof result.quote?.subtotal_cents === 'number' ? `$${(result.quote.subtotal_cents / 100).toFixed(2)}` : 'Amount pending'}{result.replayed ? ' · previous request returned' : ''}</>}</div>}
+    <p className="fine-print">A draft request needs an approved pricebook and owner review. It does not contact a customer or schedule work.</p>
+  </section>;
 }

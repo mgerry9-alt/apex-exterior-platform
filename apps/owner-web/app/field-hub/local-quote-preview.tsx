@@ -60,17 +60,17 @@ export function LocalQuotePreview() {
   }
 
   return <div className="quote-card local-preview-card">
-    <div className="quote-intro"><span className="quote-icon">↗</span><div><strong>Quote intake preview</strong><p>Enter counts to try the workflow. This does not create a lead or contact anyone.</p></div></div>
+    <div className="quote-intro"><span className="quote-icon" aria-hidden="true">↗</span><div><strong>Local measurement preview</strong><p>Enter counts to try the workflow. No quote or lead is created.</p></div></div>
     <form onSubmit={submit} className="quote-form">
       <label>Windows<input type="number" min="1" max="10000" required value={windows} onChange={event => setWindows(event.target.value)} /></label>
       <label>Screens<input type="number" min="0" max="10000" required value={screens} onChange={event => setScreens(event.target.value)} /></label>
-      <button className="button primary">Save session preview <span aria-hidden="true">→</span></button>
+      <button className="button primary">Save session counts</button>
     </form>
     <p className="fine-print">Counts stay in this browser session. No price is shown because this environment has no approved pricebook.</p>
     {notice && <p className="preview-note" role="status">{notice}</p>}
     {requests.length > 0 && <div className="preview-requests" aria-label="Local preview requests">
       <h3>Session requests <span>{requests.length}</span></h3>
-      <ul>{requests.map(request => <li key={request.id}><span>{request.windowCount} windows · {request.screenCount} screens</span><time dateTime={request.createdAt}>{new Date(request.createdAt).toLocaleString()}</time><b>Awaiting pricebook</b></li>)}</ul>
+      <ul>{requests.map(request => <li key={request.id}><span>{request.windowCount} windows · {request.screenCount} screens</span><time dateTime={request.createdAt}>{new Date(request.createdAt).toLocaleString()}</time><b>Preview only · no quote created</b></li>)}</ul>
       <button type="button" className="text-button clear-preview" onClick={() => { setRequests([]); sessionStorage.removeItem(STORAGE_KEY); setNotice('Local preview requests cleared.'); }}>Clear session requests</button>
     </div>}
   </div>;
